@@ -1,0 +1,15 @@
+<ul class="navbar-nav">
+    <li class="nav-item">
+        <a *ngIf="!walletInfo?.wallet" href="javascript:void(0)" class="btn btn-primary btn-round"
+            (click)="connectWallet()">Wallet</a>
+        <span *ngIf="walletInfo && walletInfo?.wallet!==''" [matBadge]="walletInfo.network?.replace(' network','')"
+            matBadgeColor="warn"><a href="javascript:void(0)" class="btn btn-primary btn-round walletinfo"
+                [title]="'Kennels: ' + walletInfo.kennelsTxt +'\n' + 'Network: ' + walletInfo.network"
+                (click)="showMenu=!showMenu">
+                {{walletInfo?.wallet.substr(0,4)}}...{{walletInfo?.wallet.substr(-5)}}</a></span>
+    </li>
+    <div *ngIf="showMenu" class="dropdown-menu dropdown-menu-right show" aria-labelledby="navbarDropdownMenuLink">
+        <a class="dropdown-item" href="javascript:void(0)" routerLink="/dashboard" (click)="showMenu=false">Show fighters</a>
+        <a class="dropdown-item" href="javascript:void(0)" (click)="showMenu=false; logout()">Logout</a>
+    </div>
+</ul>

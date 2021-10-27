@@ -1,0 +1,39 @@
+<div class="mainpage">
+    <app-page-header></app-page-header>
+    <div class="wrapper">
+        <div class="content" *ngIf="info">
+            <div class="header" title="Address:{{info.address}}&#10;Price: 1000 Kennels">
+                {{info.squad}}
+                <div class="recruit">
+                    <a *ngIf="!waiting" href="javascript: void(0);" class="btn btn-danger btn-round" (click)="recruit()">RECRUIT</a>
+                    <a *ngIf="waiting" href="https://testnet.bscscan.com/tx/{{tx}}" class="btn btn-danger btn-round" target="_blank">WAITING ...</a>
+                </div>
+            </div>
+            <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
+                <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%" *ngFor="let fighter of fighters | orderBy: 'token' : true">
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-title>{{fighter.name}}</mat-card-title>
+                        </mat-card-header>
+                        <div class="img">
+                            <img *ngIf="fighter.image.startsWith('http')" mat-card-image src="{{fighter.image}}">
+                            <img *ngIf="fighter.image.startsWith('Placeholder')" mat-card-image src="/assets/img/kennel-nft1.png">
+                        </div>
+                        <mat-card-content>
+                            <p>
+                                Some image description, write here what you want.{{fighter.token}}
+                            </p>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <a routerLink="/detail/{{address}}/{{fighter.token}}"
+                                class="btn btn-info btn-round">DETAIL</a>
+                            <a *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase()"
+                                class="btn btn-info btn-round">FIGHT</a>                                
+                        </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-page-bottom></app-page-bottom>
+</div>I

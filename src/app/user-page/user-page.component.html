@@ -1,0 +1,42 @@
+<div class="mainpage">
+    <app-page-header></app-page-header>
+    <div class="wrapper">
+        <div class="content">
+            <div class="header">
+                Your squad
+            </div>
+            <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
+                <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%" *ngFor="let num of [1,2,3,4,5,6,7]">
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-title>Test {{num}}</mat-card-title>
+                        </mat-card-header>
+                        <div class="img">
+                            <img *ngIf="(num%3) === 1" mat-card-image src="/assets/img/kennel-nft2.jpg">
+                            <img *ngIf="(num%3) !== 1" mat-card-image src="/assets/img/kennel-nft1.png">
+                        </div>
+                        <mat-card-content>
+                            <p>
+                                Some image description, write here what you want.
+                            </p>
+                            <p>
+                                Collection: KENNEL
+                            </p>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <a routerLink="/detail/kennel-nft{{num%2 + 1}}{{num%2 === 1 ? '.jpg' : '.png'}}"
+                                class="btn btn-info btn-round">DETAIL</a>
+                            <a *ngIf="num === 3" href="#" class="btn btn-warning btn-round"
+                                (click)="trainFighter(num)">REVEAL</a>
+                            <a *ngIf="num !== 3" href="#" class="btn btn-success btn-round"
+                                (click)="trainFighter(num)">TRAIN</a>
+                            <a *ngIf="num !== 3" href="#" class="btn btn-danger btn-round"
+                                (click)="trainFighter(num)">FIGHT</a>
+                        </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-page-bottom></app-page-bottom>
+</div>I

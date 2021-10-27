@@ -1,0 +1,20 @@
+a.walletinfo {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:host {
+    ::ng-deep .mat-badge-content {
+        width: auto;
+        padding: 0px 5px;
+    }
+
+    .dropdown-menu {
+        top: 54px;
+    }
+}
+
+.wallet-button {
+    margin-right: 25px;
+}

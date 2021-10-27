@@ -1,0 +1,39 @@
+<div class="mainpage">
+    <app-page-header></app-page-header>
+    <div class="wrapper">
+        <div class="content" *ngIf="fighterInfo">
+            <div class="header">
+                {{fighterInfo.name}}
+                <div class="buttons" *ngIf="walletInfo?.wallet">
+                    <a href="javascript: void(0);" class="btn btn-warning btn-round" (click)="train()">TRAIN</a>
+                    <a href="javascript: void(0);" class="btn btn-danger btn-round" (click)="fight()">FIGHT</a>
+                </div>
+            </div>
+            <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
+                <div class="article" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
+                    <img src="{{fighterInfo.image}}">
+                    <p>{{fighterInfo.description}}</p>
+                </div>
+                <div class="article" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
+                    <div class="row">
+                        <div class="col-md-6 name">
+                            Name
+                        </div>
+                        <div class="col-md-6 name">
+                            {{fighterInfo.name}}
+                        </div>
+                    </div>
+                     <div class="row" *ngFor="let attr of fighterInfo.attributes">
+                        <div class="col-md-6">
+                            {{attr.trait_type}}
+                        </div>
+                        <div class="col-md-6">
+                            {{attr.value}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-page-bottom></app-page-bottom>
+</div>I
