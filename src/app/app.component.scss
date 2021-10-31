@@ -1,0 +1,43 @@
+.notifications {
+    position: absolute;
+    bottom: 50px;
+    right: 20px;
+    text-align: -webkit-right;
+}
+
+.notify {
+    margin-top: 10px;
+    padding: 20px;
+    border-radius: 20px;
+    width: fit-content;
+    text-align: left;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: medium;
+    font-weight: 800;
+}
+
+.success {
+    background-color: lightgreen;
+}
+
+.error {
+    background-color: rgb(190, 0, 0);
+}
+
+.info {
+    background-color: lightskyblue;
+}
+
+.warning {
+    background-color: orange;
+}
+
+.head {
+    font-weight: bolder;
+}

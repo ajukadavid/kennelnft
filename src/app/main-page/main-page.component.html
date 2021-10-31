@@ -22,11 +22,11 @@
                     </div>
                 </div>
             </div>
-            <div class="silver" *ngIf="teams?.length>0">
+            <div class="silver" *ngIf="config && loaded && teams?.length>0">
                 <swiper [config]="config">
                     <ng-template swiperSlide *ngFor="let team of teams">
                         <div class="article">
-                            <a routerLink="/squad/{{team.address}}"><img src="/assets/img/{{team.image}}"></a>
+                            <a routerLink="/squad/{{team.address}}"><img src="/assets/img/{{team.image}}" onerror="this.src='/assets/img/team.jpg';"></a>
                             <div class="description">{{team.squad}}</div>
                         </div>
                     </ng-template>

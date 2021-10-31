@@ -3,7 +3,7 @@
         <a *ngIf="!walletInfo?.wallet" href="javascript:void(0)" class="btn btn-primary btn-round"
             (click)="connectWallet()">Wallet</a>
         <span *ngIf="walletInfo && walletInfo?.wallet!==''" [matBadge]="walletInfo.network?.replace(' network','')"
-            matBadgeColor="warn"><a href="javascript:void(0)" class="btn btn-primary btn-round walletinfo"
+            [matBadgeColor]="badgeColor"><a href="javascript:void(0)" class="btn btn-info btn-round walletinfo"
                 [title]="'Kennels: ' + walletInfo.kennelsTxt +'\n' + 'Network: ' + walletInfo.network"
                 (click)="showMenu=!showMenu">
                 {{walletInfo?.wallet.substr(0,4)}}...{{walletInfo?.wallet.substr(-5)}}</a></span>

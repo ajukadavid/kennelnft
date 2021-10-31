@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ThemePalette } from "@angular/material/core";
 import { Subscription } from "rxjs";
 import { CryptoWalletService } from "../crypto-wallet.service";
 
@@ -9,6 +10,7 @@ import { CryptoWalletService } from "../crypto-wallet.service";
 })
 export class WalletInfoComponent implements OnInit, OnDestroy {
 
+    public badgeColor: ThemePalette = "primary";
     public get walletInfo(): any {
         return this.cryptoWalletService.walletInfo;
     };
@@ -16,10 +18,16 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     public showMenu = false;
 
-    constructor(private cryptoWalletService: CryptoWalletService,private cdr: ChangeDetectorRef) { }
+    constructor(private cryptoWalletService: CryptoWalletService,
+        private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe((data) => {
+            if (!data.isConnected) {
+                this.badgeColor = "warn";
+            } else {
+                this.badgeColor = "primary";
+            }
             this.cdr.detectChanges();
         }));
     }
@@ -33,7 +41,7 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
     }
 
     public logout() {
-        this.cryptoWalletService.disconnectWallet();        
+        this.cryptoWalletService.disconnectWallet();
     }
 
 

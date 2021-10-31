@@ -1,18 +1,28 @@
 <div class="mainpage">
     <app-page-header></app-page-header>
     <div class="wrapper">
-        <div class="content" *ngIf="fighterInfo">
+        <div class="content" *ngIf="fighter">
             <div class="header">
-                {{fighterInfo.name}}
-                <div class="buttons" *ngIf="walletInfo?.wallet">
-                    <a href="javascript: void(0);" class="btn btn-warning btn-round" (click)="train()">TRAIN</a>
-                    <a href="javascript: void(0);" class="btn btn-danger btn-round" (click)="fight()">FIGHT</a>
+                {{fighter.metadata.name}}
+                <div class="buttons" *ngIf="walletInfo?.wallet && walletInfo?.isConnected === true">
+                    <a *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter.imageUploaded"
+                        class="btn btn-danger btn-round">FIGHT</a>
+                    <a *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter.imageUploaded"
+                        class="btn btn-success btn-round">TRAIN</a>
+                    <a (click)="revealFighter(fighter)"
+                        *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && !fighter.imageUploaded && !fighter?.waiting"
+                        class="btn btn-warning btn-round">REVEAL</a>
+                    <a href="https://testnet.bscscan.com/tx/{{fighter.tx}}"
+                        *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter?.waiting"
+                        class="btn btn-info btn-round" title="Click to show transaction" target="_blank">WAITING</a>
                 </div>
             </div>
             <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
                 <div class="article" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
-                    <img src="{{fighterInfo.image}}">
-                    <p>{{fighterInfo.description}}</p>
+                    <div class="img">
+                        <img src="{{fighter.metadata.image}}">
+                    </div>
+                    <p>{{fighter.metadata.description}}</p>
                 </div>
                 <div class="article" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
                     <div class="row">
@@ -20,10 +30,10 @@
                             Name
                         </div>
                         <div class="col-md-6 name">
-                            {{fighterInfo.name}}
+                            {{fighter.metadata.name}}
                         </div>
                     </div>
-                     <div class="row" *ngFor="let attr of fighterInfo.attributes">
+                    <div class="row" *ngFor="let attr of fighter.metadata.attributes">
                         <div class="col-md-6">
                             {{attr.trait_type}}
                         </div>
@@ -32,6 +42,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="buttons center">
+                <a routerLink="/squad/{{address}}" class="btn btn-primary btn-round">BACK</a>
             </div>
         </div>
     </div>

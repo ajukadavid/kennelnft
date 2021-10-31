@@ -2,25 +2,29 @@ import { Injectable } from "@angular/core";
 import { Web3ModalService } from "@mindsorg/web3modal-angular";
 import Web3 from "web3";
 import * as _ from "lodash";
-import { ToastrService } from "ngx-toastr";
-import { ADDRESS, ADDRESSABI, NETWORKS } from "./constants";
-import { Observable, Subject } from "rxjs";
+import { NETWORKS, DEFAULTNETWORK } from "./constants";
+import { Observable, ReplaySubject, Subject } from "rxjs";
 import fighter from "../assets/abi/fighter.json";
+import trainer from "../assets/abi/training.json";
+import token from "../assets/abi/token.json";
+import { NotifyService } from "./notify.service";
+
 
 @Injectable({
     providedIn: "root"
 })
 export class CryptoWalletService {
 
-    private updated: Subject<any> = new Subject();
+    private updated: ReplaySubject<any> = new ReplaySubject(1);
     public updated$: Observable<any> = this.updated.asObservable();
 
     private transactionStatus: Subject<any> = new Subject();
-    public transactionStatus$: Observable<any> = this.transactionStatus.asObservable();    
+    public transactionStatus$: Observable<any> = this.transactionStatus.asObservable();
 
     public walletInfo: {
         wallet: string,
         network: string,
+        isConnected: boolean,
     };
 
     private provider;
@@ -32,42 +36,17 @@ export class CryptoWalletService {
     }
 
     constructor(
-        private toastr: ToastrService,
+        private notifierService: NotifyService,
         private web3modalService: Web3ModalService) { }
 
     private async getWalletInfo(web3, account, login) {
         const walletInfo = _.cloneDeep(this.walletInfo);
-        if (account) {
+        if (account && walletInfo) {
             walletInfo.wallet = account;
         }
         //    await this.getNFTInfo(web3, walletInfo);
-        this.walletInfo = _.cloneDeep(walletInfo);
+        this.walletInfo = walletInfo ? _.cloneDeep(walletInfo) : this.walletInfo;
         this.updated.next(this.walletInfo);
-    }
-
-    private async getNFTInfo(web3: any, walletInfo: any) {
-        try {
-            //    const contract = new web3.eth.Contract(ADDRESSABI, ADDRESS);
-
-            // let balance = await contract.methods.balanceOf(walletInfo.wallet, GOLDEN).call();
-            // // read NFT
-            // if (balance > 0) {
-            //     walletInfo.isGolden = GOLDEN;
-            // }
-            // for (let silver of SILVERS) {
-            //     console.log("silver",walletInfo.wallet );
-            //     balance = await contract.methods.balanceOf(walletInfo.wallet, silver).call();
-            //     console.log("silver",walletInfo.wallet, balance );
-            //     if (balance > 0) {
-            //         walletInfo.silvers.push(silver);
-            //     }
-            // }
-        } catch (ex) {
-            this.toastr.error("We can't check nft hodling. Pls check that you are connected to MATIC network. Or ty reload page", "NFT check problem");
-            // not connected
-            console.log(ex);
-        }
-        this.walletInfo = walletInfo;
     }
 
     public async disconnectWallet() {
@@ -80,8 +59,9 @@ export class CryptoWalletService {
         this.walletInfo = {
             wallet: undefined,
             network: undefined,
+            isConnected: false
         };
-        this.toastr.success("Account " + account + " disconnected", "Wallet disconnected");
+        this.notifierService.pop("success", "Account " + account + " disconnected", "Account info");
     }
 
     private async getConnection(accounts) {
@@ -95,17 +75,19 @@ export class CryptoWalletService {
             const networkId = parseInt(chainId, 16);
             this.walletInfo = this.walletInfo ? this.walletInfo : {} as any;
             this.walletInfo.network = NETWORKS[networkId] ? NETWORKS[networkId] : `${networkId} network`;
+            this.walletInfo.isConnected = networkId === DEFAULTNETWORK;
             this.getWalletInfo(this.web3, this.walletInfo.wallet, false);
         });
         const networkId = await this.web3.eth.getChainId();
         const walletInfo = {} as any;
-        console.log("accounts", accounts);
+        walletInfo.isConnected = networkId === DEFAULTNETWORK;
+
         if (accounts && accounts.length > 0) {
             walletInfo.network = NETWORKS[networkId] ? NETWORKS[networkId] : `${networkId} network`;
             walletInfo.wallet = accounts[0].toLowerCase();
             this.walletInfo = walletInfo;
             await this.getWalletInfo(this.web3, walletInfo.wallet, true);
-            this.toastr.success("Account " + walletInfo.wallet + " at " + this.walletInfo.network, "Wallet connected");
+            this.notifierService.pop("success", "Account " + walletInfo.wallet + " connected to " + this.walletInfo.network, "Account info");
         }
     }
 
@@ -144,35 +126,95 @@ export class CryptoWalletService {
         }
     }
 
-    public async signMessage(message) {
-        const hash = this.web3.utils.sha3(message);
-        const signature = await this.web3.eth.personal.sign(hash, this.walletInfo.wallet);
-        return signature;
-    }
-
     public async createFighter(address): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractFighter.methods.createFighter().send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.recruit().send({ from: this.walletInfo.wallet })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
-                    // .once("receipt", function (receipt) { console.log("receipt", receipt); })
-                    // .on("confirmation", function (confNumber, receipt, latestBlockHash) { console.log("confirmation", confNumber, receipt, latestBlockHash); })
-                    // .on("error", function (error) { console.error("error", error); })
                     .then(function (receipt) {
-                        toaster.success("Your transaction is confirmed", "Payment transaction");
-                        trans.next({status: "completed", data: receipt});
-                        // will be fired once the receipt is mined
-                        // console.log("minted receipt", receipt);
-                        // return resolve({result: true, tx: receipt});
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Fighter completed", data: receipt });
                     });
-            }))(this.toastr, this.transactionStatus);
+            }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
             console.log("err", err);
         }
     }
+
+    public async revealFighter(tokenId, address, hash): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        console.log("trainerAddress", trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        console.log("contractTrainer", contractTrainer);
+        try {
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractTrainer.methods.revealFighter(tokenId, hash).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Reveal completed", data: tokenId });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+            return Promise.resolve({ result: false });
+        }
+    }
+
+    public async checkAllowed(address): Promise<boolean> {
+        if (this.walletInfo.wallet) {
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+            const trainerAddress = await contractFighter.methods.trainerContract().call();
+            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+            const tokenAddress = await contractTrainer.methods.tokenAddress().call();
+
+            if (tokenAddress) {
+                const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
+                const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
+                console.log("allow", allow);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async approve(address): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const tokenAddress = await contractTrainer.methods.tokenAddress().call();
+        if (tokenAddress) {
+            const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
+            try {
+                return ((toaster, trans) => new Promise((resolve, reject) => {
+                    contractToken.methods.approve(trainerAddress, "99999999999999999999999999999999999999999999999999999890000000000000000000000").send({
+                        from: this.walletInfo.wallet
+                    })
+                        .once("transactionHash", function (hash) {
+                            resolve({ result: true, data: hash });
+                        })
+                        .then(function (receipt) {
+                            toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                            trans.next({ status: "Approve completed", data: receipt });
+                        });
+                }))(this.notifierService, this.transactionStatus);
+            }
+            catch (err) {
+                console.log("err", err);
+                return Promise.resolve({ result: false });
+            }
+        }
+    }
+
 }

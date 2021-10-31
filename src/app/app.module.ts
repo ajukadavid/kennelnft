@@ -8,7 +8,6 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { Web3ModalModule, Web3ModalService } from "@mindsorg/web3modal-angular";
 import { MatBadgeModule } from "@angular/material/badge";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { ToastrModule } from "ngx-toastr";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { HttpClientModule } from "@angular/common/http";
 import { RouterModule } from "@angular/router";
@@ -54,11 +53,6 @@ import { PageBottomComponent } from './page-bottom/page-bottom.component';
         SwiperModule,
         HttpClientModule,
         BrowserAnimationsModule,
-        ToastrModule.forRoot({
-            timeOut: 7000,
-            positionClass: "toast-bottom-right"
-        }
-        ),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [{

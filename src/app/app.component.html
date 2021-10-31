@@ -1,4 +1,11 @@
 <router-outlet></router-outlet>
 
+<div class="notifications" *ngIf="notifications.length > 0">
+    <div *ngFor="let notify of notifications" class="notify {{notify.type}}">
+        <div class="close" (click)="removeNofity(notify.id)">X</div>
+        <div class="head">{{notify.title}}</div>
+        <div class="text">{{notify.message}}</div>
+    </div>
+</div>
 <m-web3-modal title="Connect your wallet" description="Connect your wallet to Kennel site"
     descriptionGray="This will enable more options to you" dismissText="Walet was not connected"></m-web3-modal>

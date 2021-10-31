@@ -1,4 +1,6 @@
 {
     "network": "https://data-seed-prebsc-1-s1.binance.org:8545",
-    "address": "0x431Fe47B4550A03532C2487AE0095f9E9Db5536e"
+    "networkId": "97",
+    "address": "0x889cc2717f9934F0d4B4082F40C73727b7De559f",
+    "beurl": "http://localhost:12477/api"
 }

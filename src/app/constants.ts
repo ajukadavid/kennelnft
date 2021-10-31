@@ -2,9 +2,10 @@ import configJson from "../assets/abi/config.json";
 
 export const WEB3URL = configJson.network;
 export const KOMBATADDRESS = configJson.address;
+export const BEURL = configJson.beurl; // "/api"; 
+export const DEFAULTNETWORK = Number(configJson.networkId);
 
-
-export const ADDRESS = "0xa009687d331c8bf93e78cf5f673954542a25f811";
+export const ADDRESS = "0x889cc2717f9934F0d4B4082F40C73727b7De559f";
 
 export const ADDRESSABI = [{
     "inputs": [{ "internalType": "string", "name": "_name", "type": "string" },
