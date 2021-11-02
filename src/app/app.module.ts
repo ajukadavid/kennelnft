@@ -13,6 +13,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { RouterModule } from "@angular/router";
 import { SwiperModule } from "swiper/angular";
 import { OrderModule } from "ngx-order-pipe";
+import { NgxSpinnerModule } from "ngx-spinner";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -46,9 +47,10 @@ import { PageBottomComponent } from './page-bottom/page-bottom.component';
         MatBadgeModule,
         MatButtonModule,
         MatInputModule,
+        NgxSpinnerModule,
         FlexLayoutModule,
         FormsModule,
-        RouterModule.forRoot([]),
+        RouterModule.forRoot([]),        
         ReactiveFormsModule,
         SwiperModule,
         HttpClientModule,

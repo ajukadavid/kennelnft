@@ -2,11 +2,12 @@ import { Injectable } from "@angular/core";
 import { Web3ModalService } from "@mindsorg/web3modal-angular";
 import Web3 from "web3";
 import * as _ from "lodash";
-import { NETWORKS, DEFAULTNETWORK } from "./constants";
+import { NETWORKS, DEFAULTNETWORK, KENNELADDRESS, KOMBATADDRESS } from "./constants";
 import { Observable, ReplaySubject, Subject } from "rxjs";
 import fighter from "../assets/abi/fighter.json";
 import trainer from "../assets/abi/training.json";
 import token from "../assets/abi/token.json";
+import kombat from "../assets/abi/kombat.json";
 import { NotifyService } from "./notify.service";
 
 
@@ -126,6 +127,72 @@ export class CryptoWalletService {
         }
     }
 
+    public async fight(tokenId, address): Promise<any> {
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+        try {
+            // call transfer function
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractKombat.methods.fight(address, tokenId).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Fight completed", data: tokenId });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+        }
+    }
+
+    public async train(tokenId, address): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        try {
+            // call transfer function
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractTrainer.methods.train(tokenId).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Training completed", data: tokenId });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+        }
+    }
+
+
+    public async refillArmor(tokenId, address): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        try {
+            // call transfer function
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractTrainer.methods.refillArmor(tokenId).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Refill completed", data: tokenId });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+        }
+    }
+    
+
     public async createFighter(address): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
@@ -173,20 +240,67 @@ export class CryptoWalletService {
     }
 
     public async checkAllowed(address): Promise<boolean> {
-        if (this.walletInfo.wallet) {
-            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
-            const trainerAddress = await contractFighter.methods.trainerContract().call();
-            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
-            const tokenAddress = await contractTrainer.methods.tokenAddress().call();
+        try {
+            if (this.walletInfo.wallet) {
+                const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+                const trainerAddress = await contractFighter.methods.trainerContract().call();
+                const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+                const tokenAddress = await contractTrainer.methods.tokenAddress().call();
 
-            if (tokenAddress) {
-                const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
-                const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
+                if (tokenAddress) {
+                    const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
+                    const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
+                    console.log("allow", allow);
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (err) {
+            console.log("err", err);
+            return false;
+        }
+    }
+
+
+    public async checkAllowedKennel(): Promise<boolean> {
+        try {
+            if (this.walletInfo.wallet) {
+                const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
+                const allow = await contractToken.methods.allowance(this.walletInfo.wallet, KOMBATADDRESS).call();
                 console.log("allow", allow);
                 return true;
             }
+            return false;
         }
-        return false;
+        catch (err) {
+            console.log("err", err);
+            return false;
+        }
+    }
+
+    public async approveKennel(): Promise<any> {
+        if (this.walletInfo.wallet) {
+            const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
+            try {
+                return ((toaster, trans) => new Promise((resolve, reject) => {
+                    contractToken.methods.approve(KOMBATADDRESS, "99999999999999999999999999999999999999999999999999999890000000000000000000000").send({
+                        from: this.walletInfo.wallet
+                    })
+                        .once("transactionHash", function (hash) {
+                            resolve({ result: true, data: hash });
+                        })
+                        .then(function (receipt) {
+                            toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                            trans.next({ status: "Approve kennel completed", data: receipt });
+                        });
+                }))(this.notifierService, this.transactionStatus);
+            }
+            catch (err) {
+                console.log("err", err);
+                return Promise.resolve({ result: false });
+            }
+        }
     }
 
     public async approve(address): Promise<any> {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 import { Subscription } from 'rxjs';
 import { CryptoWalletService } from '../crypto-wallet.service';
@@ -19,9 +20,16 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     public info;
     public fighters = [];
     public waiting = false;
+    public waitingKennel = false;
     public allowed = false;
+    public allowedKennel = false;
     public tx = "";
+    public txKennel = "";
     private lastFighter = 0;
+    private startFighter = 9999999;
+    public fightersCount = 0;
+    public loading = false;
+
     private subscription: Subscription = new Subscription();
     public get walletInfo(): any {
         return this.cryptoWalletService.walletInfo;
@@ -31,20 +39,23 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         private nftContractsService: NftContractsService,
         private cryptoWalletService: CryptoWalletService,
         private nftImageService: NftImageService,
+        private ngxSpinnerService: NgxSpinnerService,
         private cd: ChangeDetectorRef,
         private notifyService: NotifyService) { }
 
     async ngOnInit() {
-        this.notifyService.pop("info", "Getting data from contract", "Loading data");
+        this.ngxSpinnerService.show();
+        this.cd.detectChanges();
         this.address = this.route.snapshot.params['address'];
         this.subscribeToWallet();
-        // this.info = { address: this.address, squad: "Test" };
         this.info = await this.nftContractsService.getSquadInfo(this.address);
-        console.log("this.info", this.info);
-        this.nftContractsService.getFightersInfo(this.address);
-        console.log("this.fighters", this.fighters);
         this.subscribeToTransactions();
         this.subscribeToDataStream();
+        this.loading = true;
+        await this.nftContractsService.getFightersInfo(this.address, 10);
+        this.loading = false;
+        this.ngxSpinnerService.hide();
+        this.cd.detectChanges();
     }
 
     public async recruit() {
@@ -62,8 +73,11 @@ export class SquadPageComponent implements OnInit, OnDestroy {
             if (this.walletInfo.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
                 this.allowed = allowed;
+                const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
+                this.allowedKennel = allowedKennel;
             } else {
                 this.allowed = false;
+                this.allowedKennel = false;
             }
             this.cd.detectChanges();
         }));
@@ -73,18 +87,14 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         this.subscription.add(this.cryptoWalletService.transactionStatus$.subscribe(async (data) => {
             console.log("subscribeToTransactions", data);
             if (data.status === "Fighter completed") {
-                // const newFighter = data?.data?.events?.NewFighter?.returnValues?.figherId;
-                // if (newFighter) {
-                //     this.nftContractsService.getFighterBasicInfo(this.address, newFighter);
-                // }
-                this.nftContractsService.getFightersInfo(this.address, this.lastFighter);
+                this.loading = true;
+                this.nftContractsService.getFightersInfo(this.address, undefined, this.lastFighter);
+                this.loading = false;
                 this.waiting = false;
                 this.tx = "";
             } else if (data.status === "Reveal completed") {
                 console.log("Reveal", data, this.fighters);
                 const fighter = this.fighters.find((fight) => fight.token === data.data);
-
-                console.log("fighter", fighter);
 
                 if (fighter) {
                     fighter.imageUploaded = true;
@@ -97,6 +107,20 @@ export class SquadPageComponent implements OnInit, OnDestroy {
                 console.log("Approve", data);
                 this.waiting = false;
                 this.allowed = true;
+            } else if (data.status === "Approve kennel completed") {
+                console.log("Approve kennel", data);
+                this.waitingKennel = false;
+                this.allowedKennel = true;
+                this.txKennel = undefined;
+            } else if (data.status === "Fight completed") {
+                const fighter = this.fighters.find((fight) => fight.token === data.data);
+                console.log("Fight completed", data.data);
+
+                if (fighter) {
+                    fighter.waiting = false;
+                    fighter.tx = undefined;
+                    this.notifyService.pop("success", "Fight finished ...", "Fight completed");
+                }
             }
             this.cd.detectChanges();
         }));
@@ -106,12 +130,25 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         this.subscription.add(this.nftContractsService.dataStream$.subscribe(async (data) => {
             if (data.type === "fighter") {
                 this.lastFighter = (this.lastFighter <= data.fighter.token) ? (data.fighter.token + 1) : this.lastFighter;
+                this.startFighter = (this.startFighter > data.fighter.token) ? (data.fighter.token) : this.startFighter;
                 this.fighters.splice(0, 0, data.fighter);
                 console.log("data.fighter", data.fighter);
+            } else if (data.type === "team") {
+                this.fightersCount = data.fighters;
             }
             this.cd.detectChanges();
         }));
     }
+
+    public async loadNext() {
+        this.loading = true;
+        console.log("this.startFighter", this.startFighter);
+        await this.nftContractsService.getFightersInfo(this.address, 10, undefined, this.startFighter);
+        this.loading = false;
+        console.log("pocet", this.fighters.length, this.fightersCount);
+        this.cd.detectChanges();
+    }
+
 
     public async approve() {
         const result = await this.cryptoWalletService.approve(this.address);
@@ -122,24 +159,53 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    public async revealFighter(fighter) {
-        this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
-        const generatedImage = await this.nftImageService.generateImage(fighter.token, this.address);
-        console.log(generatedImage, "generatedImage");
-        if (generatedImage.error) {
-            this.notifyService.pop("error", generatedImage.error, "Image create problem");
-            return;
-        }
-        if (generatedImage.ipfs) {
-            const result = await this.cryptoWalletService.revealFighter(fighter.token, this.address, generatedImage.ipfs);
-            if (result.result === true) {
-                fighter.metadata.image = generatedImage.url;
-                fighter.waiting = true;
-                fighter.tx = result.data;
-                this.cd.detectChanges();
-            }
+    public async approveKennel() {
+        const result = await this.cryptoWalletService.approveKennel();
+        if (result.result === true) {
+            this.txKennel = result.data;
+            this.waitingKennel = true;
+            this.cd.detectChanges();
         }
     }
+
+    public async revealFighter(fighter) {
+        this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
+        try {
+            const generatedImage = { ipfs: "QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV", error: undefined, url: "https://gateway.pinata.cloud/ipfs/QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV" };
+//            const generatedImage = await this.nftImageService.generateImage(fighter.token, this.address);
+            console.log(generatedImage, "generatedImage");
+            if (generatedImage.error) {
+                this.notifyService.pop("error", generatedImage.error, "Image create problem");
+                return;
+            }
+            if (generatedImage.ipfs) {
+                const result = await this.cryptoWalletService.revealFighter(fighter.token, this.address, generatedImage.ipfs);
+                if (result.result === true) {
+                    fighter.metadata.image = generatedImage.url;
+                    fighter.waiting = true;
+                    fighter.tx = result.data;
+                    this.cd.detectChanges();
+                }
+            }
+        } catch (ex) {
+            console.log(ex);
+            this.notifyService.pop("error", ex.message, "Image create problem");
+            fighter.waiting = false;
+            this.cd.detectChanges();
+        }
+    }
+
+    public async fight(fighter) {
+        const result = await this.cryptoWalletService.fight(fighter.token, this.address);
+        if (result.result === true) {
+            fighter.waiting = true;
+            fighter.tx = result.data;
+        } else {
+            fighter.waiting = false;
+        }
+        this.cd.detectChanges();
+    }
+
 
     ngOnDestroy() {
         this.subscription.unsubscribe();

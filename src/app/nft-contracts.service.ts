@@ -21,6 +21,8 @@ export class NftContractsService {
     private dataStream: Subject<any> = new Subject();
     public dataStream$: Observable<any> = this.dataStream.asObservable();
 
+    private teamsData = {};
+
     constructor(
         private notifierService: NotifyService
     ) { }
@@ -61,11 +63,15 @@ export class NftContractsService {
     public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; recruitPrice: number; tokenSymbol: string }> {
         let teamsInfo = { address: "", name: "", symbol: "", recruitPrice: 0, tokenSymbol: "" };
         try {
+            if (this.teamsData[address]) {
+                console.log("this.teamsData[address]", this.teamsData[address]);
+                return this.teamsData[address];
+            }
             this.initWeb3();
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
             console.log("trainerAddress", trainerAddress);
-            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);            
+            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
             const name = await contractFighter.methods.name().call();
             const symbol = await contractFighter.methods.symbol().call();
             const recruitPrice = await contractTrainer.methods.recruitPrice().call();
@@ -73,12 +79,13 @@ export class NftContractsService {
             let tokenSymbol = "";
             const tokenAddress = await contractTrainer.methods.tokenAddress().call();
             if (tokenAddress) {
-                const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);  
+                const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
                 const decimals = await contractToken.methods.decimals().call();
                 tokenSymbol = await contractToken.methods.symbol().call();
                 price = recruitPrice / (10 ** decimals);
-            }          
+            }
             teamsInfo = { address, name, symbol, recruitPrice: price, tokenSymbol };
+            this.teamsData[address] = teamsInfo;
             return teamsInfo;
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Kombat contract, try again later", "Contract connect");
@@ -88,21 +95,63 @@ export class NftContractsService {
         return teamsInfo;
     }
 
-    public async getFightersInfo(address, lastFighter = 0) {
+    public async getPrices(address): Promise<{ address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string }> {
+        let teamsInfo = { address: "", armorPrice: 0, trainingPrice: 0, tokenSymbol: "" };
+        try {
+            this.initWeb3();
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+            const trainerAddress = await contractFighter.methods.trainerContract().call();
+            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+            const armorPrice = await contractTrainer.methods.armorPrice().call();
+            const trainingPrice = await contractTrainer.methods.trainingPrice().call();
+            let price = 0;
+            let trainPrice = 0;
+            let tokenSymbol = "";
+            const tokenAddress = await contractTrainer.methods.tokenAddress().call();
+            if (tokenAddress) {
+                const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
+                const decimals = await contractToken.methods.decimals().call();
+                tokenSymbol = await contractToken.methods.symbol().call();
+                price = armorPrice / (10 ** decimals);
+                trainPrice = trainingPrice / (10 ** decimals);
+            }
+            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, tokenSymbol };
+            return teamsInfo;
+        } catch (ex) {
+            this.notifierService.pop("error", "We can't check Fighters contract, try again later", "Contract connect");
+            // not connected
+            console.log(ex);
+        }
+        return teamsInfo;
+
+    }
+
+    public async getFightersInfo(address, numFighters = 10, lastFighter?, startFighter?): Promise<any> {
         try {
             this.initWeb3();
             // get teams
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
-            let fighters = await contractFighter.methods.tokenCounter().call();
-            //      this.dataStream.next({ type: "fighters", fighters }); TODO preload images...
-
-            for (let fighter = lastFighter; fighter < fighters; fighter++) {
-                this.getFighterBasicInfo(address, fighter);
+            let start = startFighter;
+            if (!startFighter) {
+                let fighters = await contractFighter.methods.tokenCounter().call();
+                this.dataStream.next({ type: "team", fighters });
+                start = fighters;
             }
+            let end = lastFighter ? lastFighter : (start - numFighters);
+            end = (end < 0) ? 0 : end;
+            let promises = [];
+            console.log("start", start);
+            console.log("end", end);
+            for (let fighter = (start - 1); fighter >= end; fighter--) {
+                promises.push(this.getFighterBasicInfo(address, fighter));
+            }
+            const results = await Promise.all(promises);
+            return { result: "ok" };
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Kombat contract, try again later", "Contract connect");
             // not connected
             console.log(ex);
+            return { result: "error" };
         }
     }
 
@@ -124,7 +173,8 @@ export class NftContractsService {
             const ownerOf = await contractFighter.methods.ownerOf(tokenId).call();
             teamContent = { token: tokenId, ownerOf, imageUploaded, metadata: json };
 
-            this.dataStream.next({ type: "fighter", fighter: teamContent })
+            this.dataStream.next({ type: "fighter", fighter: teamContent });
+            console.log("data", tokenId);
             return teamContent;
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Kombat contract, try again later", "Contract connect");

@@ -36,7 +36,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.notifications.push(data);
             setTimeout(() => {
                 this.removeNofity(data.id);
-            }, 6000);
+            }, 5000);
             this.cdr.detectChanges();
         }));
     }

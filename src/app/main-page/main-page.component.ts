@@ -8,6 +8,7 @@ import SwiperCore, {
     SwiperOptions
 } from "swiper";
 import { NftContractsService } from '../nft-contracts.service';
+import { NgxSpinnerService } from "ngx-spinner";
 
 SwiperCore.use([
     Navigation,
@@ -33,9 +34,12 @@ export class MainPageComponent implements OnInit {
     ];
     public config: SwiperOptions;
 
-    constructor(private nftContractsService: NftContractsService) { }
+    constructor(private nftContractsService: NftContractsService,
+            private ngxSpinnerService: NgxSpinnerService,
+        ) { }
 
     async ngOnInit() {
+        this.ngxSpinnerService.show();
         const teams = await this.nftContractsService.getKombatInfo();
         this.teams = teams ? teams : [];
         this.config = {
@@ -62,6 +66,7 @@ export class MainPageComponent implements OnInit {
                 }
             }
         };
+        this.ngxSpinnerService.hide();
         this.loaded = true;
     }
 

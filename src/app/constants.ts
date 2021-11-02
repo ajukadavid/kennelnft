@@ -4,8 +4,7 @@ export const WEB3URL = configJson.network;
 export const KOMBATADDRESS = configJson.address;
 export const BEURL = configJson.beurl; // "/api"; 
 export const DEFAULTNETWORK = Number(configJson.networkId);
-
-export const ADDRESS = "0x889cc2717f9934F0d4B4082F40C73727b7De559f";
+export const KENNELADDRESS = configJson.kenneladdress;
 
 export const ADDRESSABI = [{
     "inputs": [{ "internalType": "string", "name": "_name", "type": "string" },

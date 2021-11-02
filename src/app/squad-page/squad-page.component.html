@@ -2,7 +2,7 @@
     <app-page-header></app-page-header>
     <div class="wrapper">
         <div class="content" *ngIf="info?.address && info.address !==''">
-            <div class="header" title="Price: {{info.recruitPrice}} {{info.tokenSymbol}}">
+            <div class="header" title="Recruit price: {{info.recruitPrice}} {{info.tokenSymbol}}">
                 {{info.name}} ({{info.symbol}})
                 <div class="recruit" *ngIf="allowed && walletInfo?.isConnected === true">
                     <a *ngIf="!waiting" href="javascript: void(0);" class="btn btn-danger btn-round"
@@ -26,8 +26,7 @@
                         </mat-card-header>
                         <div class="img">
                             <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
-                                [src]="fighter.metadata.image"
-                                onerror="this.src='/assets/img/siluette.png';">
+                                [src]="fighter.metadata.image" onerror="this.src='/assets/img/siluette.png';">
                         </div>
                         <mat-card-content>
                             <p>
@@ -37,8 +36,15 @@
                         <mat-card-actions>
                             <a routerLink="/detail/{{address}}/{{fighter.token}}"
                                 class="btn btn-success btn-round">DETAIL</a>
-                            <a *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded"
-                                class="btn btn-primary btn-round">FIGHT</a>
+                            <a *ngIf="allowedKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded && !fighter?.waiting"
+                                class="btn btn-primary btn-round" (click)="fight(fighter)">FIGHT</a>
+                            <a href="https://testnet.bscscan.com/tx/{{txKennel}}"
+                                *ngIf="waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
+                                class="btn btn-info btn-round" title="Click to show transaction"
+                                target="_blank">WAITING</a>
+                            <a *ngIf="!allowedKennel && !waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
+                                href="javascript: void(0);" class="btn btn-danger btn-round"
+                                (click)="approveKennel()">APPROVE</a>
                             <a (click)="revealFighter(fighter)"
                                 *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && !fighter.imageUploaded && !fighter?.waiting"
                                 class="btn btn-warning btn-round">REVEAL</a>
@@ -46,6 +52,21 @@
                                 *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter?.waiting"
                                 class="btn btn-info btn-round" title="Click to show transaction"
                                 target="_blank">WAITING</a>
+                        </mat-card-actions>
+                    </mat-card>
+                </div>
+                <div *ngIf="fightersCount > fighters.length" class="article" fxLayoutAlign="center center" fxFlex="20%"
+                    fxFlex.xs="100%" fxFlex.sm="33%">
+                    <mat-card>
+                        <mat-card-header>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <p>
+                            </p>
+                        </mat-card-content>
+                        <mat-card-actions>
+                            <a *ngIf="!loading" class="btn btn-primary btn-round" (click)="loadNext()">LOAD NEXT</a>
+                            <a *ngIf="loading" class="btn btn-info btn-round">LOADING...</a>
                         </mat-card-actions>
                     </mat-card>
                 </div>
