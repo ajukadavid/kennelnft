@@ -115,7 +115,7 @@
 				],
 				"name": "attackerVictory",
 				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -158,7 +158,7 @@
 				],
 				"name": "defenderVictory",
 				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -183,6 +183,19 @@
 					}
 				],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "fightPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -354,13 +367,52 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "power",
+						"name": "",
 						"type": "uint256"
 					},
 					{
 						"internalType": "bool",
-						"name": "critDefend",
+						"name": "",
 						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTokenBalance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "kennelAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "marketingAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -385,6 +437,19 @@
 				"outputs": [
 					{
 						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "pancakeRouter02",
+				"outputs": [
+					{
+						"internalType": "contract IPancakeRouter02",
 						"name": "",
 						"type": "address"
 					}
@@ -452,6 +517,26 @@
 			{
 				"inputs": [],
 				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "setFightPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "splitTokens",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -549,7 +634,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"KeNFT/KennelKombat.sol": "KennelKombat"
+			"WiNFT/KennelKombat/Kombat.sol": "KennelKombat"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -603,12 +688,28 @@
 				"dweb:/ipfs/Qmd8hXE3GZfBHuWx3RNiYgFW2ci7KvHtib8DiwzJ2dgo9V"
 			]
 		},
+		"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol": {
+			"keccak256": "0x41dc7bf7f69c668eb98aa078c5140a4d3c3b097124ee4b6058a649ca99688300",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://621b0e2f8b95aa04707f3106f48a8c7cfab2d6fbe2dd8253e70b0b024daee683",
+				"dweb:/ipfs/QmTptvu7MJ6QcogPJUxkDEkdKm97KGTC28bhsZKu4sex4M"
+			]
+		},
 		"@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol": {
 			"keccak256": "0x188d038a65a945481cc13fe30db334472dfbed61f7959d4478d05feb6303b1ea",
 			"license": "MIT",
 			"urls": [
 				"bzz-raw://7aec4efa22389811ffa393463569410bbca1ecaa551bc94d69020bc9567e9277",
 				"dweb:/ipfs/QmPwk5uVSHPQkepebrZSQ9xqgXdPABKqHwJZ2HkzNByLRE"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol": {
+			"keccak256": "0xa69205e5009601cf13be78b1e2f500e1e3b1d8012f22d966e63975273f602038",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d919a0061e43f9878f6171b7f853cb92093805cd1160858c1884195a639b40a0",
+				"dweb:/ipfs/QmRZsS3EYuLp75nBym1QQ4y6aQXGew75wSbv1uwqkvouUK"
 			]
 		},
 		"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
@@ -659,28 +760,35 @@
 				"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx"
 			]
 		},
-		"KeNFT/KennelFighter.sol": {
-			"keccak256": "0x8493f05158f5a3c83cb854d098f3dc9338081167c4dade99493be9c4f4f745ed",
+		"WiNFT/KennelKombat/KennelBuild.sol": {
+			"keccak256": "0xd51f56db4a9efa9f8aa70711e63d4d71bbd5728b812921d5620ccb3dd512db77",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://264ad52773110c69834e6602a61ca972f6f184b32ae879dc57dee4c359a53c56",
-				"dweb:/ipfs/QmQ2GBrJUt93uRGXBGJ4P4ntAdy2rfGYRBSNYNSFL1oHEE"
+				"bzz-raw://75406290aa0f5df1b3390a4c5c42d1306a862b1627bcb2cd93350f2c9483109f",
+				"dweb:/ipfs/QmYueYdacH5dn24LJv2YeBDSv9BAR4qshVHk6ftH2C8ChT"
 			]
 		},
-		"KeNFT/KennelKombat.sol": {
-			"keccak256": "0x73f7b9bfff9e7e8adcf6b1ae58179bfc8e43ff85c2d28bc05257429e2cf4855e",
+		"WiNFT/KennelKombat/Kombat.sol": {
+			"keccak256": "0x51ac4a6773efe93ab9f38016a6f87b0473414dc1cd3860ca2bdf09714c5f8b3b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://632d6e21a118e698ff393f01524363affc167080e41499be029093c44c7d139a",
-				"dweb:/ipfs/QmP3AVZ5wSNZdR6Nee9L3yz9vPMwPRGXurAJPZfge9fyTr"
+				"bzz-raw://7278149ae5739dbec1cda44893a38b692279ae66db14ed7c86796476165ff8a8",
+				"dweb:/ipfs/QmWFhuDTgobQzzk3hvPGUQtNrJiPAVWL8tAj9ga8f3oQuy"
+			]
+		},
+		"WiNFT/KennelKombat/pcs.sol": {
+			"keccak256": "0xbc21e261c7e2bd5ab934e0ad1070fefd34baf824993915a04e47be7c7780f760",
+			"urls": [
+				"bzz-raw://ca206a7c322e73dbebec79670d0c03c9c51b408db0369681c7f488f9ba27f3a9",
+				"dweb:/ipfs/QmVELXDsdZmat4jZhPfG825qTJrgavBah1rFzSZQbqJcSn"
 			]
 		},
 		"base64-sol/base64.sol": {
-			"keccak256": "0x0c8ad17afea99676d4dbab1857f52a7660b67602a79d03abd0a4c742074bbeb3",
+			"keccak256": "0xa73959e6ef0b693e4423a562e612370160b934a75e618361ddd8c9c4b8ddbaaf",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://692d64ac089a389d2e955d92c75e9f3ee642257a39c91c2efa7493a21e79d61a",
-				"dweb:/ipfs/QmVSGRBRjeh4APNHjHD5GbYY7BrBhWRj8aHkmqHJQwQiK1"
+				"bzz-raw://17c12e16d8d66f3af15d8787920bd41ca6c1e7517a212a6b9cebd4b6d38f36fe",
+				"dweb:/ipfs/QmcXMnZUXEz6LRKsm3CSvqdPboAzmezavi8bTg2dRxM2yE"
 			]
 		}
 	},

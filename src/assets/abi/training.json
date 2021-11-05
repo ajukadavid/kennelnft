@@ -200,6 +200,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "randNonce",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "recruit",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -260,29 +273,24 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_balance",
+						"name": "_amount",
 						"type": "uint256"
-					},
+					}
+				],
+				"name": "setArmorPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
 					{
 						"internalType": "address",
 						"name": "_address",
 						"type": "address"
 					}
 				],
-				"name": "sell",
-				"outputs": [],
-				"stateMutability": "payable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_amount",
-						"type": "uint256"
-					}
-				],
-				"name": "setArmorPrice",
+				"name": "setFighterKombat",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -389,6 +397,19 @@
 					}
 				],
 				"name": "setTokenAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
+				"name": "setTrainingContract",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -515,7 +536,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"KeNFT/KennelTraining.sol": "KennelTrainer"
+			"WiNFT/KennelKombat/Trainer.sol": "KennelTrainer"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -567,6 +588,14 @@
 			"urls": [
 				"bzz-raw://0e604bcdcd5e5b2fb299ad09769cde6db19d5aa1929d1b5e939234a0f10d7eb8",
 				"dweb:/ipfs/Qmd8hXE3GZfBHuWx3RNiYgFW2ci7KvHtib8DiwzJ2dgo9V"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol": {
+			"keccak256": "0x41dc7bf7f69c668eb98aa078c5140a4d3c3b097124ee4b6058a649ca99688300",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://621b0e2f8b95aa04707f3106f48a8c7cfab2d6fbe2dd8253e70b0b024daee683",
+				"dweb:/ipfs/QmTptvu7MJ6QcogPJUxkDEkdKm97KGTC28bhsZKu4sex4M"
 			]
 		},
 		"@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol": {
@@ -633,44 +662,35 @@
 				"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx"
 			]
 		},
-		"KeNFT/KennelFighter.sol": {
-			"keccak256": "0x8493f05158f5a3c83cb854d098f3dc9338081167c4dade99493be9c4f4f745ed",
+		"WiNFT/KennelKombat/KennelBuild.sol": {
+			"keccak256": "0xd51f56db4a9efa9f8aa70711e63d4d71bbd5728b812921d5620ccb3dd512db77",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://264ad52773110c69834e6602a61ca972f6f184b32ae879dc57dee4c359a53c56",
-				"dweb:/ipfs/QmQ2GBrJUt93uRGXBGJ4P4ntAdy2rfGYRBSNYNSFL1oHEE"
+				"bzz-raw://75406290aa0f5df1b3390a4c5c42d1306a862b1627bcb2cd93350f2c9483109f",
+				"dweb:/ipfs/QmYueYdacH5dn24LJv2YeBDSv9BAR4qshVHk6ftH2C8ChT"
 			]
 		},
-		"KeNFT/KennelKombat.sol": {
-			"keccak256": "0x73f7b9bfff9e7e8adcf6b1ae58179bfc8e43ff85c2d28bc05257429e2cf4855e",
+		"WiNFT/KennelKombat/Trainer.sol": {
+			"keccak256": "0x8c41b81d5a507174c9814f81119ecee7d9793fd3c235331d4cbb213b578dac9f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://632d6e21a118e698ff393f01524363affc167080e41499be029093c44c7d139a",
-				"dweb:/ipfs/QmP3AVZ5wSNZdR6Nee9L3yz9vPMwPRGXurAJPZfge9fyTr"
+				"bzz-raw://419a72336e0c82c417b25e334385362afc958e27492f3783e9de92421e6ed2ad",
+				"dweb:/ipfs/QmdGnTrWVe2E5DAZnwFHXnZ2K2ydSMUo6XowzVAL5esUhn"
 			]
 		},
-		"KeNFT/KennelTraining.sol": {
-			"keccak256": "0xef7c6365c53cdab7c4a86a1b8fcadf154695ee0e5a106a5e51672e5c6231ac4e",
-			"license": "MIT",
+		"WiNFT/KennelKombat/pcs.sol": {
+			"keccak256": "0xbc21e261c7e2bd5ab934e0ad1070fefd34baf824993915a04e47be7c7780f760",
 			"urls": [
-				"bzz-raw://7ddc2b757b96350b575fb053e68dd50954c4aa7350da0bc15837933de2e5a999",
-				"dweb:/ipfs/QmXhZs3qG1x37m94KxhYxetmCc9QnEP82e26CCVaWjG5ka"
-			]
-		},
-		"KeNFT/pcs.sol": {
-			"keccak256": "0xc83645dbf0b3f44a06cbfac999e26cc207be24841cc53863d3b144b2dcaabd12",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://0f3b04f4b232ec94dff554e89478fde5b18e37a779b2c3d0c87a3570a5d1ac65",
-				"dweb:/ipfs/QmYGjewT98LdG9dtcxfc8qMGeHPThtKWahW87wGcB5Mjyz"
+				"bzz-raw://ca206a7c322e73dbebec79670d0c03c9c51b408db0369681c7f488f9ba27f3a9",
+				"dweb:/ipfs/QmVELXDsdZmat4jZhPfG825qTJrgavBah1rFzSZQbqJcSn"
 			]
 		},
 		"base64-sol/base64.sol": {
-			"keccak256": "0x0c8ad17afea99676d4dbab1857f52a7660b67602a79d03abd0a4c742074bbeb3",
+			"keccak256": "0xa73959e6ef0b693e4423a562e612370160b934a75e618361ddd8c9c4b8ddbaaf",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://692d64ac089a389d2e955d92c75e9f3ee642257a39c91c2efa7493a21e79d61a",
-				"dweb:/ipfs/QmVSGRBRjeh4APNHjHD5GbYY7BrBhWRj8aHkmqHJQwQiK1"
+				"bzz-raw://17c12e16d8d66f3af15d8787920bd41ca6c1e7517a212a6b9cebd4b6d38f36fe",
+				"dweb:/ipfs/QmcXMnZUXEz6LRKsm3CSvqdPboAzmezavi8bTg2dRxM2yE"
 			]
 		}
 	},

@@ -25,18 +25,13 @@ SwiperCore.use([
 export class MainPageComponent implements OnInit {
 
     public loaded = false;
-    public teams: any = [
-        // { squad: "Kennel", image: "kennel-nft1.png", symbol: "Kennel", address: "0x000" },
-        // { squad: "DPump", image: "kennel-nft2.jpg", symbol: "DPump", address: "0x000" },
-        // { squad: "DEEZ", image: "kennel-nft1.png", symbol: "DEEZ", address: "0x000" },
-        // { squad: "Knights", image: "kennel-nft1.png", symbol: "Kennel", address: "0x000" },
-        // { squad: "SafeMoon", image: "kennel-nft2.jpg", symbol: "Kennel", address: "0x000" }
-    ];
+    public show = false;
+    public teams: any = [];
     public config: SwiperOptions;
 
     constructor(private nftContractsService: NftContractsService,
-            private ngxSpinnerService: NgxSpinnerService,
-        ) { }
+        private ngxSpinnerService: NgxSpinnerService,
+    ) { }
 
     async ngOnInit() {
         this.ngxSpinnerService.show();

@@ -2101,6 +2101,7 @@ fieldset[disabled][disabled] .btn-group-raised .btn,
     height: 2.5rem;
     display: flex;
     background: black;
+    z-index: 10;
     padding: 5px;
     color: whitesmoke;
 
@@ -2134,3 +2135,12 @@ fieldset[disabled][disabled] .btn-group-raised .btn,
     margin: 50px auto;
 }
 
+.mat-drawer-container {
+    overflow: hidden;
+    z-index: 1;
+    background-color: unset;
+}
+
+.mat-drawer-content {
+    overflow: hidden !important;
+}

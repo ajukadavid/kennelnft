@@ -23,10 +23,13 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe((data) => {
-            if (!data.isConnected) {
-                this.badgeColor = "warn";
-            } else {
-                this.badgeColor = "primary";
+            console.log("WalletInfoComponent", data);
+            if (data) {
+                if (!data.isConnected) {
+                    this.badgeColor = "warn";
+                } else {
+                    this.badgeColor = "primary";
+                }
             }
             this.cdr.detectChanges();
         }));

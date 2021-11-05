@@ -4,8 +4,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 
 import { Subscription } from 'rxjs';
 import { CryptoWalletService } from '../crypto-wallet.service';
+import { NftActionsService } from '../nft-actions.service';
 import { NftContractsService } from '../nft-contracts.service';
-import { NftImageService } from '../nft-image.service';
 import { NotifyService } from '../notify.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     constructor(private route: ActivatedRoute,
         private nftContractsService: NftContractsService,
         private cryptoWalletService: CryptoWalletService,
-        private nftImageService: NftImageService,
+        private nftActionsService: NftActionsService,
         private ngxSpinnerService: NgxSpinnerService,
         private cd: ChangeDetectorRef,
         private notifyService: NotifyService) { }
@@ -88,7 +88,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
             console.log("subscribeToTransactions", data);
             if (data.status === "Fighter completed") {
                 this.loading = true;
-                this.nftContractsService.getFightersInfo(this.address, undefined, this.lastFighter);
+                await this.nftContractsService.getFightersInfo(this.address, undefined, this.lastFighter);
                 this.loading = false;
                 this.waiting = false;
                 this.tx = "";
@@ -142,10 +142,8 @@ export class SquadPageComponent implements OnInit, OnDestroy {
 
     public async loadNext() {
         this.loading = true;
-        console.log("this.startFighter", this.startFighter);
         await this.nftContractsService.getFightersInfo(this.address, 10, undefined, this.startFighter);
         this.loading = false;
-        console.log("pocet", this.fighters.length, this.fightersCount);
         this.cd.detectChanges();
     }
 
@@ -170,29 +168,8 @@ export class SquadPageComponent implements OnInit, OnDestroy {
 
     public async revealFighter(fighter) {
         this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
-        try {
-            const generatedImage = { ipfs: "QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV", error: undefined, url: "https://gateway.pinata.cloud/ipfs/QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV" };
-//            const generatedImage = await this.nftImageService.generateImage(fighter.token, this.address);
-            console.log(generatedImage, "generatedImage");
-            if (generatedImage.error) {
-                this.notifyService.pop("error", generatedImage.error, "Image create problem");
-                return;
-            }
-            if (generatedImage.ipfs) {
-                const result = await this.cryptoWalletService.revealFighter(fighter.token, this.address, generatedImage.ipfs);
-                if (result.result === true) {
-                    fighter.metadata.image = generatedImage.url;
-                    fighter.waiting = true;
-                    fighter.tx = result.data;
-                    this.cd.detectChanges();
-                }
-            }
-        } catch (ex) {
-            console.log(ex);
-            this.notifyService.pop("error", ex.message, "Image create problem");
-            fighter.waiting = false;
-            this.cd.detectChanges();
-        }
+        await this.nftActionsService.revealFighter(fighter, this.address);
+        this.cd.detectChanges();
     }
 
     public async fight(fighter) {

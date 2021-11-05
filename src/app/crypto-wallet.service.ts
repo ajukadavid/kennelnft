@@ -9,6 +9,7 @@ import trainer from "../assets/abi/training.json";
 import token from "../assets/abi/token.json";
 import kombat from "../assets/abi/kombat.json";
 import { NotifyService } from "./notify.service";
+import { NftContractsService } from "./nft-contracts.service";
 
 
 @Injectable({
@@ -38,6 +39,7 @@ export class CryptoWalletService {
 
     constructor(
         private notifierService: NotifyService,
+        private nftContractsService: NftContractsService,
         private web3modalService: Web3ModalService) { }
 
     private async getWalletInfo(web3, account, login) {
@@ -73,15 +75,19 @@ export class CryptoWalletService {
 
         // Subscribe to chainId change
         this.provider.on("chainChanged", (chainId: string) => {
-            const networkId = parseInt(chainId, 16);
-            this.walletInfo = this.walletInfo ? this.walletInfo : {} as any;
-            this.walletInfo.network = NETWORKS[networkId] ? NETWORKS[networkId] : `${networkId} network`;
-            this.walletInfo.isConnected = networkId === DEFAULTNETWORK;
-            this.getWalletInfo(this.web3, this.walletInfo.wallet, false);
+            if (this.walletInfo) {
+                const networkId = parseInt(chainId, 16);
+                this.walletInfo = this.walletInfo ? this.walletInfo : {} as any;
+                this.walletInfo.network = NETWORKS[networkId] ? NETWORKS[networkId] : `${networkId} network`;
+                this.walletInfo.isConnected = networkId === DEFAULTNETWORK;
+                this.getWalletInfo(this.web3, this.walletInfo.wallet, false);
+            }
         });
         const networkId = await this.web3.eth.getChainId();
         const walletInfo = {} as any;
         walletInfo.isConnected = networkId === DEFAULTNETWORK;
+        console.log("networkId", networkId);
+        console.log("walletInfo", walletInfo);
 
         if (accounts && accounts.length > 0) {
             walletInfo.network = NETWORKS[networkId] ? NETWORKS[networkId] : `${networkId} network`;
@@ -191,7 +197,7 @@ export class CryptoWalletService {
             console.log("err", err);
         }
     }
-    
+
 
     public async createFighter(address): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
@@ -251,7 +257,7 @@ export class CryptoWalletService {
                     const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
                     const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
                     console.log("allow", allow);
-                    return true;
+                    return allow > 0;
                 }
             }
             return false;
@@ -269,7 +275,7 @@ export class CryptoWalletService {
                 const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
                 const allow = await contractToken.methods.allowance(this.walletInfo.wallet, KOMBATADDRESS).call();
                 console.log("allow", allow);
-                return true;
+                return allow > 0;
             }
             return false;
         }
@@ -329,6 +335,22 @@ export class CryptoWalletService {
                 return Promise.resolve({ result: false });
             }
         }
+    }
+
+    public async getUserFightersInfo(): Promise<any> {
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+        let teams = await contractKombat.methods.allTeams().call();
+        const promises = [];
+        for (const team of teams) {
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
+            let numNfts = await contractFighter.methods.balanceOf(this.walletInfo.wallet).call();
+            for (let i = 0; i < numNfts; i++) {
+                const nft = await contractFighter.methods.tokenOfOwnerByIndex(this.walletInfo.wallet, i).call();
+                promises.push(this.nftContractsService.getFighterBasicInfo(team, nft));
+            }
+        }
+        const results = await Promise.all(promises);
+        return results;
     }
 
 }

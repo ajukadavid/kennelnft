@@ -132,8 +132,11 @@ export class NftContractsService {
             // get teams
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             let start = startFighter;
+            console.log("address", address);
             if (!startFighter) {
-                let fighters = await contractFighter.methods.tokenCounter().call();
+                let fighters = await contractFighter.methods.totalSupply().call();
+                console.log("start", fighters);
+
                 this.dataStream.next({ type: "team", fighters });
                 start = fighters;
             }
@@ -171,7 +174,7 @@ export class NftContractsService {
             console.log("info", Buffer.from(base64, 'base64').toString('ascii'));
             const json = JSON.parse(Buffer.from(base64, 'base64').toString('ascii').replace("\"attributes\":\"", "\"attributes\":").replace("]\", \"image", "], \"image"));
             const ownerOf = await contractFighter.methods.ownerOf(tokenId).call();
-            teamContent = { token: tokenId, ownerOf, imageUploaded, metadata: json };
+            teamContent = { address, token: tokenId, ownerOf, imageUploaded, metadata: json };
 
             this.dataStream.next({ type: "fighter", fighter: teamContent });
             console.log("data", tokenId);

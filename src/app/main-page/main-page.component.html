@@ -2,37 +2,74 @@
     <app-page-header></app-page-header>
     <div class="wrapper">
         <div class="main-content">
-            <div class="head">
-                <h1>KENNEL NFT GAME</h1>
-            </div>
-            <div class="golden">
-                <div class="article">
-                    <div class="text">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer imperdiet lectus quis justo.
-                        Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Ut enim ad minim veniam, quis
-                        nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor
-                        sit amet, consectetuer adipiscing elit. Curabitur ligula sapien, pulvinar a vestibulum quis,
-                        facilisis vel sapien. Fusce aliquam vestibulum ipsum. Lorem ipsum dolor sit amet, consectetuer
-                        adipiscing elit. Praesent vitae arcu tempor neque lacinia pretium. Maecenas lorem. Donec ipsum
-                        massa, ullamcorper in, auctor et, scelerisque sed, est. Sed ac dolor sit amet purus malesuada
-                        congue. Vivamus ac leo pretium faucibus. Quis autem vel eum iure reprehenderit qui in ea
-                        voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
-                        voluptas nulla pariatur? Fusce suscipit libero eget elit. Mauris elementum mauris vitae tortor.
-                        Proin pede metus, vulputate nec, fermentum fringilla, vehicula vitae, justo. Etiam neque.
+            <!-- <mat-drawer-container [hasBackdrop]="false">
+                <mat-drawer #drawer mode="push" class="help-text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer imperdiet lectus quis
+                    justo.
+                    Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Ut enim ad minim
+                    veniam, quis
+                    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem
+                    ipsum dolor
+                    sit amet, consectetuer adipiscing elit. Curabitur ligula sapien, pulvinar a vestibulum
+                    quis,
+                    facilisis vel sapien. Fusce aliquam vestibulum ipsum. Lorem ipsum dolor sit amet,
+                    consectetuer
+                    adipiscing elit. Praesent vitae arcu tempor neque lacinia pretium. Maecenas lorem. Donec
+                    ipsum
+                    massa, ullamcorper in, auctor et, scelerisque sed, est. Sed ac dolor sit amet purus
+                    malesuada
+                    congue. Vivamus ac leo pretium faucibus. Quis autem vel eum iure reprehenderit qui in ea
+                    voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat
+                    quo
+                    voluptas nulla pariatur? Fusce suscipit libero eget elit. Mauris elementum mauris vitae
+                    tortor.</mat-drawer>
+                <mat-drawer-content>
+                    <button mat-fab aria-label="Show help" (click)="drawer.toggle()" class="toogle" color="primary">
+                        <mat-icon>live_help</mat-icon>
+                    </button>                     -->
+                    <div class="head">
+                        <h1>KENNEL NFT GAME</h1>
                     </div>
-                </div>
-            </div>
-            <div class="silver" *ngIf="config && loaded && teams?.length>0">
-                <swiper [config]="config">
-                    <ng-template swiperSlide *ngFor="let team of teams">
+                    <div class="golden">
                         <div class="article">
-                            <a routerLink="/squad/{{team.address}}"><img src="/assets/img/{{team.image}}" onerror="this.src='/assets/img/team.jpg';"></a>
-                            <div class="description">{{team.squad}}</div>
+                            <div class="text">
+                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer imperdiet lectus quis
+                                justo.
+                                Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Ut enim ad minim
+                                veniam, quis
+                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem
+                                ipsum dolor
+                                sit amet, consectetuer adipiscing elit. Curabitur ligula sapien, pulvinar a vestibulum
+                                quis,
+                                facilisis vel sapien. Fusce aliquam vestibulum ipsum. Lorem ipsum dolor sit amet,
+                                consectetuer
+                                adipiscing elit. Praesent vitae arcu tempor neque lacinia pretium. Maecenas lorem. Donec
+                                ipsum
+                                massa, ullamcorper in, auctor et, scelerisque sed, est. Sed ac dolor sit amet purus
+                                malesuada
+                                congue. Vivamus ac leo pretium faucibus. Quis autem vel eum iure reprehenderit qui in ea
+                                voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat
+                                quo
+                                voluptas nulla pariatur? Fusce suscipit libero eget elit. Mauris elementum mauris vitae
+                                tortor.
+                                Proin pede metus, vulputate nec, fermentum fringilla, vehicula vitae, justo. Etiam
+                                neque.
+                            </div>
                         </div>
-                    </ng-template>
-                </swiper>
-            </div>
+                    </div>
+                    <div class="silver" *ngIf="config && loaded && teams?.length>0">
+                        <swiper [config]="config">
+                            <ng-template swiperSlide *ngFor="let team of teams">
+                                <div class="article">
+                                    <a routerLink="/squad/{{team.address}}"><img src="/assets/img/{{team.image}}"
+                                            onerror="this.src='/assets/img/team.jpg';"></a>
+                                    <div class="description">{{team.squad}}</div>
+                                </div>
+                            </ng-template>
+                        </swiper>
+                    </div>
+                <!-- </mat-drawer-content>
+            </mat-drawer-container> -->
         </div>
     </div>
     <app-page-bottom></app-page-bottom>
-</div>I
+</div>

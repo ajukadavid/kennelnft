@@ -26,9 +26,11 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.cryptoWalletService.checkConnection();
         this.subscription.add(this.cryptoWalletService.updated$.subscribe((data) => {
-            if (!data.isConnected) {
-                this.notifyService.pop("error", `Switch to ${NETWORKS[DEFAULTNETWORK]}!`, "Wrong network");
-                this.cdr.detectChanges();
+            if (data) {
+                if (!data.isConnected) {
+                    this.notifyService.pop("error", `Switch to ${NETWORKS[DEFAULTNETWORK]}!`, "Wrong network");
+                    this.cdr.detectChanges();
+                }
             }
         }));
         this.subscription.add(this.notifyService.notifyStatus$.subscribe((data) => {

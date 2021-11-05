@@ -14,6 +14,8 @@ import { RouterModule } from "@angular/router";
 import { SwiperModule } from "swiper/angular";
 import { OrderModule } from "ngx-order-pipe";
 import { NgxSpinnerModule } from "ngx-spinner";
+import { MatSidenavModule } from '@angular/material/sidenav';
+import {MatIconModule} from '@angular/material/icon';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -45,12 +47,14 @@ import { PageBottomComponent } from './page-bottom/page-bottom.component';
         MatFormFieldModule,
         Web3ModalModule,
         MatBadgeModule,
+        MatSidenavModule,
         MatButtonModule,
         MatInputModule,
         NgxSpinnerModule,
+        MatIconModule,
         FlexLayoutModule,
         FormsModule,
-        RouterModule.forRoot([]),        
+        RouterModule.forRoot([]),
         ReactiveFormsModule,
         SwiperModule,
         HttpClientModule,
