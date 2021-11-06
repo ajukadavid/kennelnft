@@ -143,8 +143,9 @@ export class CryptoWalletService {
                         resolve({ result: true, data: hash });
                     })
                     .then(function (receipt) {
+                        console.log("receipt", receipt);
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
-                        trans.next({ status: "Fight completed", data: tokenId });
+                        trans.next({ status: "Fight completed", data: {...receipt, tokenId} });
                     });
             }))(this.notifierService, this.transactionStatus);
         }
@@ -167,6 +168,30 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Training completed", data: tokenId });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+        }
+    }
+
+    
+
+    public async levelUp(tokenId, address): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        try {
+            // call transfer function
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractTrainer.methods.refillArmor(tokenId).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Refill completed", data: tokenId });
                     });
             }))(this.notifierService, this.transactionStatus);
         }
@@ -245,7 +270,7 @@ export class CryptoWalletService {
         }
     }
 
-    public async checkAllowed(address): Promise<boolean> {
+    public async checkAllowed(address): Promise<number> {
         try {
             if (this.walletInfo.wallet) {
                 const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
@@ -257,31 +282,31 @@ export class CryptoWalletService {
                     const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
                     const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
                     console.log("allow", allow);
-                    return allow > 0;
+                    return allow;
                 }
             }
-            return false;
+            return -1;
         }
         catch (err) {
             console.log("err", err);
-            return false;
+            return -1;
         }
     }
 
 
-    public async checkAllowedKennel(): Promise<boolean> {
+    public async checkAllowedKennel(): Promise<number> {
         try {
             if (this.walletInfo.wallet) {
                 const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
                 const allow = await contractToken.methods.allowance(this.walletInfo.wallet, KOMBATADDRESS).call();
                 console.log("allow", allow);
-                return allow > 0;
+                return allow;
             }
-            return false;
+            return -1;
         }
         catch (err) {
             console.log("err", err);
-            return false;
+            return -1;
         }
     }
 

@@ -2,44 +2,75 @@
     <app-page-header></app-page-header>
     <div class="wrapper">
         <div class="content">
-            <div class="header">
-                Your squad
-            </div>
-            <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
-                <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%"
-                    *ngFor="let fighter of fighters | orderBy: 'token' : true">
-                    <mat-card>
-                        <mat-card-header>
-                            <mat-card-title>{{fighter.metadata.name}}{{fighter.token}}</mat-card-title>
-                        </mat-card-header>
-                        <div class="img">
-                            <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
-                                [src]="fighter.metadata.image" onerror="this.src='/assets/img/siluette.png';">
+            <mat-drawer-container [hasBackdrop]="false">
+                <mat-drawer #drawer mode="push" class="help-text">Lorem ipsum dolor sit amet, consectetuer adipiscing
+                    elit. Integer imperdiet lectus quis
+                    justo.
+                    Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Ut enim ad minim
+                    veniam, quis
+                    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem
+                    ipsum dolor
+                    sit amet, consectetuer adipiscing elit. Curabitur ligula sapien, pulvinar a vestibulum
+                    quis,
+                    facilisis vel sapien. Fusce aliquam vestibulum ipsum. Lorem ipsum dolor sit amet,
+                    consectetuer
+                    adipiscing elit. Praesent vitae arcu tempor neque lacinia pretium. Maecenas lorem. Donec
+                    ipsum
+                    massa, ullamcorper in, auctor et, scelerisque sed, est. Sed ac dolor sit amet purus
+                    malesuada
+                    congue. Vivamus ac leo pretium faucibus. Quis autem vel eum iure reprehenderit qui in ea
+                    voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat
+                    quo
+                    voluptas nulla pariatur? Fusce suscipit libero eget elit. Mauris elementum mauris vitae
+                    tortor.</mat-drawer>
+                <mat-drawer-content>
+                    <button mat-fab aria-label="Show help" (click)="drawer.toggle()" class="toogle" color="primary">
+                        <mat-icon>live_help</mat-icon>
+                    </button>
+                    <div class="header">
+                        Your fighters
+                    </div>
+                    <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
+                        <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%"
+                            *ngFor="let fighter of fighters | orderBy: 'token' : true">
+                            <mat-card>
+                                <mat-card-header>
+                                    <mat-card-title>{{fighter.metadata.name}}{{fighter.token}}</mat-card-title>
+                                </mat-card-header>
+                                <div class="img">
+                                    <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
+                                        [src]="fighter.metadata.image" onerror="this.src='/assets/img/siluette.png';">
+                                </div>
+                                <mat-card-content>
+                                    <p>
+                                        {{fighter.metadata.description}}
+                                    </p>
+                                </mat-card-content>
+                                <mat-card-actions class="custom-badge">
+                                    <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"
+                                        class="btn btn-success btn-round">DETAIL</a>
+                                    <a *ngIf="allowedKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded && !fighter?.waiting"
+                                        class="btn btn-primary btn-round" (click)="fight(fighter)"><span
+                                            matBadgePosition="below after"
+                                            [matBadge]="fightInfo.fightPrice + ' ' +fightInfo.fightSymbol"
+                                            matBadgeOverlap="false">FIGHT</span></a>
+                                    <a href="https://testnet.bscscan.com/tx/{{fighter.tx}}"
+                                        *ngIf="waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
+                                        class="btn btn-info btn-round" title="Click to show transaction"
+                                        target="_blank">WAITING</a>
+                                    <a *ngIf="!allowedKennel && !waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
+                                        href="javascript: void(0);" class="btn btn-danger btn-round"
+                                        (click)="approveKennel()">APPROVE</a>
+                                    <a (click)="revealFighter(fighter)"
+                                        *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && !fighter.imageUploaded && !fighter?.waiting"
+                                        class="btn btn-warning btn-round">REVEAL</a>
+                                </mat-card-actions>
+                            </mat-card>
                         </div>
-                        <mat-card-content>
-                            <p>
-                                {{fighter.metadata.description}}
-                            </p>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"
-                                class="btn btn-success btn-round">DETAIL</a>
-                            <a *ngIf="allowedKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded && !fighter?.waiting"
-                                class="btn btn-primary btn-round" (click)="fight(fighter)">FIGHT</a>
-                            <a href="https://testnet.bscscan.com/tx/{{fighter.tx}}"
-                                *ngIf="waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
-                                class="btn btn-info btn-round" title="Click to show transaction"
-                                target="_blank">WAITING</a>
-                            <a *ngIf="!allowedKennel && !waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
-                                href="javascript: void(0);" class="btn btn-danger btn-round"
-                                (click)="approveKennel()">APPROVE</a>
-                            <a (click)="revealFighter(fighter)"
-                                *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && !fighter.imageUploaded && !fighter?.waiting"
-                                class="btn btn-warning btn-round">REVEAL</a>
-                        </mat-card-actions>
-                    </mat-card>
-                </div>
-            </div>
+
+                    </div>
+                </mat-drawer-content>
+            </mat-drawer-container>
         </div>
     </div>
     <app-page-bottom></app-page-bottom>

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import Web3 from "web3";
 import * as _ from "lodash";
-import { KOMBATADDRESS, WEB3URL } from "./constants";
+import { KENNELADDRESS, KOMBATADDRESS, WEB3URL } from "./constants";
 import fighter from "../assets/abi/fighter.json";
 import kombat from "../assets/abi/kombat.json";
 import trainer from "../assets/abi/training.json";
@@ -60,14 +60,26 @@ export class NftContractsService {
         return [];
     }
 
-    public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; recruitPrice: number; tokenSymbol: string }> {
-        let teamsInfo = { address: "", name: "", symbol: "", recruitPrice: 0, tokenSymbol: "" };
+    public async getFightInfo(): Promise<{ fightSymbol: string; fightPrice: number }> {
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+        let fightPrice = await contractKombat.methods.fightPrice().call();
+        const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
+        const decimals = await contractToken.methods.decimals().call();
+        const fightSymbol = await contractToken.methods.symbol().call();
+        const fightPr = fightPrice / (10 ** decimals);
+        return { fightSymbol, fightPrice: fightPr };
+    }
+
+    public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; fightSymbol: string; fightPrice: number; recruitPrice: number; tokenSymbol: string }> {
+        let teamsInfo = { address: "", name: "", symbol: "", fightSymbol: "", fightPrice: 0, recruitPrice: 0, tokenSymbol: "" };
         try {
             if (this.teamsData[address]) {
                 console.log("this.teamsData[address]", this.teamsData[address]);
                 return this.teamsData[address];
             }
             this.initWeb3();
+
+            const fightInfo = await this.getFightInfo();
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
             console.log("trainerAddress", trainerAddress);
@@ -84,7 +96,7 @@ export class NftContractsService {
                 tokenSymbol = await contractToken.methods.symbol().call();
                 price = recruitPrice / (10 ** decimals);
             }
-            teamsInfo = { address, name, symbol, recruitPrice: price, tokenSymbol };
+            teamsInfo = { address, name, symbol, fightPrice: fightInfo.fightPrice, fightSymbol: fightInfo.fightSymbol, recruitPrice: price, tokenSymbol };
             this.teamsData[address] = teamsInfo;
             return teamsInfo;
         } catch (ex) {
@@ -95,17 +107,20 @@ export class NftContractsService {
         return teamsInfo;
     }
 
-    public async getPrices(address): Promise<{ address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string }> {
-        let teamsInfo = { address: "", armorPrice: 0, trainingPrice: 0, tokenSymbol: "" };
+    public async getPrices(address): Promise<{ address: string; armorPrice: number; lvlUpPrice: number; trainingPrice: number; tokenSymbol: string; fightSymbol: string; fightPrice: number }> {
+        let teamsInfo = { address: "", armorPrice: 0, trainingPrice: 0, lvlUpPrice: 0, tokenSymbol: "", fightSymbol: "", fightPrice: 0 };
         try {
             this.initWeb3();
+            const fightInfo = await this.getFightInfo();
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
             const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
             const armorPrice = await contractTrainer.methods.armorPrice().call();
             const trainingPrice = await contractTrainer.methods.trainingPrice().call();
+            const levelUpPrice = await contractTrainer.methods.levelUpPrice().call();
             let price = 0;
             let trainPrice = 0;
+            let lvlUpPrice = 0;
             let tokenSymbol = "";
             const tokenAddress = await contractTrainer.methods.tokenAddress().call();
             if (tokenAddress) {
@@ -114,8 +129,9 @@ export class NftContractsService {
                 tokenSymbol = await contractToken.methods.symbol().call();
                 price = armorPrice / (10 ** decimals);
                 trainPrice = trainingPrice / (10 ** decimals);
+                lvlUpPrice = levelUpPrice / (10 ** decimals);
             }
-            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, tokenSymbol };
+            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, tokenSymbol, ...fightInfo };
             return teamsInfo;
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Fighters contract, try again later", "Contract connect");
@@ -168,13 +184,14 @@ export class NftContractsService {
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const metadata = await contractFighter.methods.tokenURI(tokenId).call();
             const imageUploaded = await contractFighter.methods.tokenToImageUpdated(tokenId).call();
+            const upgradable = await contractFighter.methods.upgradable(tokenId).call();
             console.log("metadata", address, tokenId, metadata);
             const base64 = metadata.split(",")[1];
             console.log("base64", base64);
             console.log("info", Buffer.from(base64, 'base64').toString('ascii'));
             const json = JSON.parse(Buffer.from(base64, 'base64').toString('ascii').replace("\"attributes\":\"", "\"attributes\":").replace("]\", \"image", "], \"image"));
             const ownerOf = await contractFighter.methods.ownerOf(tokenId).call();
-            teamContent = { address, token: tokenId, ownerOf, imageUploaded, metadata: json };
+            teamContent = { address, token: tokenId, ownerOf, imageUploaded, metadata: json, upgradable };
 
             this.dataStream.next({ type: "fighter", fighter: teamContent });
             console.log("data", tokenId);

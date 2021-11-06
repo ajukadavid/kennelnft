@@ -352,7 +352,13 @@
 					}
 				],
 				"name": "getNewToughness",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -1156,11 +1162,11 @@
 			]
 		},
 		"WiNFT/KennelKombat/KennelBuild.sol": {
-			"keccak256": "0xd51f56db4a9efa9f8aa70711e63d4d71bbd5728b812921d5620ccb3dd512db77",
+			"keccak256": "0xa812965670a1f6368a1ecc7b75c09ce6fc7d01dd00a8c84749ed9a176a7ea474",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://75406290aa0f5df1b3390a4c5c42d1306a862b1627bcb2cd93350f2c9483109f",
-				"dweb:/ipfs/QmYueYdacH5dn24LJv2YeBDSv9BAR4qshVHk6ftH2C8ChT"
+				"bzz-raw://3c84a3232ae7ed6264c6d2f859f46ac8fb56a0c8619d0720370503092565f10b",
+				"dweb:/ipfs/QmRZu91JHhtKpWHE77KY76dVBkzMA5iKmzSjQYotUQQ9TG"
 			]
 		},
 		"base64-sol/base64.sol": {

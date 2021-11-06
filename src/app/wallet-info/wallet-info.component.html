@@ -9,7 +9,7 @@
                 {{walletInfo?.wallet.substr(0,4)}}...{{walletInfo?.wallet.substr(-5)}}</a></span>
     </li>
     <div *ngIf="showMenu" class="dropdown-menu dropdown-menu-right show" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" href="javascript:void(0)" routerLink="/dashboard" (click)="showMenu=false">Show fighters</a>
+        <a class="dropdown-item" href="javascript:void(0)" routerLink="/dashboard" (click)="showMenu=false">Your fighters</a>
         <a class="dropdown-item" href="javascript:void(0)" (click)="showMenu=false; logout()">Logout</a>
     </div>
 </ul>

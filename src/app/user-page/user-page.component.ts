@@ -22,6 +22,7 @@ export class UserPageComponent implements OnInit {
     public allowedKennel = false;
     public tx = "";
     public loading = false;
+    public fightInfo = { fightPrice: 9999, fightSymbol: ""};
 
     constructor(private cryptoWalletService: CryptoWalletService,
         private ngxSpinnerService: NgxSpinnerService,
@@ -40,6 +41,7 @@ export class UserPageComponent implements OnInit {
         this.fighters = [];
         this.loading = true;
         await this.cryptoWalletService.getUserFightersInfo();
+        this.fightInfo = await this.nftContractsService.getFightInfo();
         this.loading = false;
         this.ngxSpinnerService.hide();
         this.cd.detectChanges();
@@ -60,7 +62,7 @@ export class UserPageComponent implements OnInit {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
             if (this.walletInfo.isConnected === true) {
                 const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
-                this.allowedKennel = allowedKennel;
+                this.allowedKennel = allowedKennel > this.fightInfo.fightPrice;
             } else {
                 this.allowedKennel = false;
             }
@@ -89,7 +91,7 @@ export class UserPageComponent implements OnInit {
                 this.allowedKennel = true;
                 this.tx = undefined;
             } else if (data.status === "Fight completed") {
-                const fighter = this.fighters.find((fight) => fight.token === data.data);
+                const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);
                 console.log("Fight completed", data.data);
 
                 if (fighter) {

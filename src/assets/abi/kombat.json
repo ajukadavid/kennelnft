@@ -522,6 +522,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "resetTeams",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -761,19 +768,19 @@
 			]
 		},
 		"WiNFT/KennelKombat/KennelBuild.sol": {
-			"keccak256": "0xd51f56db4a9efa9f8aa70711e63d4d71bbd5728b812921d5620ccb3dd512db77",
+			"keccak256": "0x2632911454073daa7d9f66f32416896110e99d64dc7ab3ba37fc08bb2179c5f4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://75406290aa0f5df1b3390a4c5c42d1306a862b1627bcb2cd93350f2c9483109f",
-				"dweb:/ipfs/QmYueYdacH5dn24LJv2YeBDSv9BAR4qshVHk6ftH2C8ChT"
+				"bzz-raw://629005776a3142a6c7716fd24c5a1ea22448244a64f907889d9317a493e42dfe",
+				"dweb:/ipfs/QmcBiPQTcPG4dxLnzGxaZJAyKLyCEXtJFbTbNgVsWpWjgh"
 			]
 		},
 		"WiNFT/KennelKombat/Kombat.sol": {
-			"keccak256": "0x51ac4a6773efe93ab9f38016a6f87b0473414dc1cd3860ca2bdf09714c5f8b3b",
+			"keccak256": "0xba6234f610a46ffaa98adb356341c07990a2b4fc645b1cabbe9525001a6798aa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7278149ae5739dbec1cda44893a38b692279ae66db14ed7c86796476165ff8a8",
-				"dweb:/ipfs/QmWFhuDTgobQzzk3hvPGUQtNrJiPAVWL8tAj9ga8f3oQuy"
+				"bzz-raw://1d667fede8783e7d6679e5bd0b7dcd5bdaa08702e61156f65a8c6a1fe3510591",
+				"dweb:/ipfs/Qma21g3zEGStReS8AmkpWuRBvkbPvCERkWcYvJ5QfQx8eg"
 			]
 		},
 		"WiNFT/KennelKombat/pcs.sol": {

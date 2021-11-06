@@ -7,14 +7,15 @@
 }
 
 img {
-    width: 100%;
-    height: auto;
+    max-width: 100%;
+    max-height: 300px;
 }
 
 .img {
-    height: calc(100% - 155px);
+    height: calc(100% - 110px);
     padding-top: 10px;
     background: white;
+    min-height: 250px;
 }
 
 .article {
@@ -44,3 +45,19 @@ img {
     font-weight: bolder;
     text-align: center;
 }
+
+:host {
+    ::ng-deep .mat-badge-content {
+        width: auto;
+        padding: 0px 5px;
+    }
+}
+
+.custom-badge {
+    .mat-badge-content {
+        right: -50px;
+        bottom: -27px;
+        border-radius: 5px;
+    }
+}
+

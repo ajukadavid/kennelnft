@@ -50,3 +50,18 @@ img {
         }
     }
 }
+
+:host {
+    ::ng-deep .mat-badge-content {
+        width: auto;
+        padding: 0px 5px;
+    }
+}
+
+.custom-badge {
+    .mat-badge-content {
+        right: -50px;
+        bottom: -27px;
+        border-radius: 5px;
+    }
+}

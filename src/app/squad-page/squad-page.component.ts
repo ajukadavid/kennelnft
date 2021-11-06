@@ -47,8 +47,8 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         this.ngxSpinnerService.show();
         this.cd.detectChanges();
         this.address = this.route.snapshot.params['address'];
-        this.subscribeToWallet();
         this.info = await this.nftContractsService.getSquadInfo(this.address);
+        this.subscribeToWallet();
         this.subscribeToTransactions();
         this.subscribeToDataStream();
         this.loading = true;
@@ -72,9 +72,9 @@ export class SquadPageComponent implements OnInit, OnDestroy {
             console.log("subscribeToWallet", data);
             if (this.walletInfo.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
-                this.allowed = allowed;
+                this.allowed = allowed > this.info.recruitPrice;
                 const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
-                this.allowedKennel = allowedKennel;
+                this.allowedKennel = allowedKennel > this.info.fightPrice;
             } else {
                 this.allowed = false;
                 this.allowedKennel = false;
@@ -113,7 +113,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
                 this.allowedKennel = true;
                 this.txKennel = undefined;
             } else if (data.status === "Fight completed") {
-                const fighter = this.fighters.find((fight) => fight.token === data.data);
+                const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);
                 console.log("Fight completed", data.data);
 
                 if (fighter) {

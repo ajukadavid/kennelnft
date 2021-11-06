@@ -110,33 +110,9 @@ mat-form-field {
 }
 
 .main-content {
-    padding: 20px;
+    padding: 20px 20px 40px 20px;
 }
 
 textarea {
     padding: 20px;
-}
-
-.toogle {
-    position: absolute;
-    z-index: 1000;
-    left: 10px;
-}
-
-.help-text {
-   width: 20%;
-   padding: 10px;
-   margin: 20px;
-   padding: 20px;
-   opacity: 90%;
-   border: solid 1px #555;
-   border-radius: 20px;
-   box-shadow: 10px 20px 10px rgb(0 0 0 / 60%);
-   -moz-box-shadow: 10px 20px 10px rgb(0 0 0 / 60%);
-   -webkit-box-shadow: 10px 20px 10px rgb(0 0 0 / 60%);
-   -o-box-shadow: 10px 20px 10px rgb(0 0 0 / 60%);
-   overflow: hidden;
-   text-align: center;
-   color: black;
-   background: white;   
 }

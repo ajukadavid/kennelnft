@@ -290,19 +290,6 @@
 						"type": "address"
 					}
 				],
-				"name": "setFighterKombat",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_address",
-						"type": "address"
-					}
-				],
 				"name": "setKombatAddress",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -482,7 +469,13 @@
 					}
 				],
 				"name": "train",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -663,19 +656,27 @@
 			]
 		},
 		"WiNFT/KennelKombat/KennelBuild.sol": {
-			"keccak256": "0xd51f56db4a9efa9f8aa70711e63d4d71bbd5728b812921d5620ccb3dd512db77",
+			"keccak256": "0xa812965670a1f6368a1ecc7b75c09ce6fc7d01dd00a8c84749ed9a176a7ea474",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://75406290aa0f5df1b3390a4c5c42d1306a862b1627bcb2cd93350f2c9483109f",
-				"dweb:/ipfs/QmYueYdacH5dn24LJv2YeBDSv9BAR4qshVHk6ftH2C8ChT"
+				"bzz-raw://3c84a3232ae7ed6264c6d2f859f46ac8fb56a0c8619d0720370503092565f10b",
+				"dweb:/ipfs/QmRZu91JHhtKpWHE77KY76dVBkzMA5iKmzSjQYotUQQ9TG"
+			]
+		},
+		"WiNFT/KennelKombat/Kombat.sol": {
+			"keccak256": "0xba6234f610a46ffaa98adb356341c07990a2b4fc645b1cabbe9525001a6798aa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1d667fede8783e7d6679e5bd0b7dcd5bdaa08702e61156f65a8c6a1fe3510591",
+				"dweb:/ipfs/Qma21g3zEGStReS8AmkpWuRBvkbPvCERkWcYvJ5QfQx8eg"
 			]
 		},
 		"WiNFT/KennelKombat/Trainer.sol": {
-			"keccak256": "0x8c41b81d5a507174c9814f81119ecee7d9793fd3c235331d4cbb213b578dac9f",
+			"keccak256": "0xcdb7deddd0727846215429b85e6b1000ec282e7b7faedfc385a748174ec15e00",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://419a72336e0c82c417b25e334385362afc958e27492f3783e9de92421e6ed2ad",
-				"dweb:/ipfs/QmdGnTrWVe2E5DAZnwFHXnZ2K2ydSMUo6XowzVAL5esUhn"
+				"bzz-raw://48dc285b3b908667ec8a3790c0a1e81c200f74d85d1e7d7a9dc2ba3e2d8cb044",
+				"dweb:/ipfs/QmTg5ExbAnuveQEqwmzQFNczQK4imhqApMyJVeKwuhthMv"
 			]
 		},
 		"WiNFT/KennelKombat/pcs.sol": {
