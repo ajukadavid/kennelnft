@@ -16,6 +16,7 @@ import { OrderModule } from "ngx-order-pipe";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
+import {ClipboardModule} from '@angular/cdk/clipboard'; 
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,6 +28,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { SquadPageComponent } from './squad-page/squad-page.component';
 import { PageHeaderComponent } from './page-header/page-header.component';
 import { PageBottomComponent } from './page-bottom/page-bottom.component';
+import { FancyDialogComponent } from './fancy-dialog/fancy-dialog.component';
+import { FightHistoryComponent } from "./fight-history/fight-history.component";
 
 @NgModule({
     declarations: [
@@ -37,7 +40,9 @@ import { PageBottomComponent } from './page-bottom/page-bottom.component';
         UserPageComponent,
         SquadPageComponent,
         PageHeaderComponent,
-        PageBottomComponent
+        PageBottomComponent,
+        FightHistoryComponent,
+        FancyDialogComponent
     ],
     imports: [
         BrowserModule,
@@ -51,6 +56,7 @@ import { PageBottomComponent } from './page-bottom/page-bottom.component';
         MatButtonModule,
         MatInputModule,
         NgxSpinnerModule,
+        ClipboardModule,
         MatIconModule,
         FlexLayoutModule,
         FormsModule,

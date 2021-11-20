@@ -145,7 +145,27 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         console.log("receipt", receipt);
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
-                        trans.next({ status: "Fight completed", data: {...receipt, tokenId} });
+                        trans.next({ status: "Fight completed", data: { ...receipt, tokenId } });
+                    });
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+        }
+    }
+
+    public async gain(tokenId, address): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        try {
+            // call transfer function
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractFighter.methods.gainExp(tokenId, 10000000000).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Gain completed", data: tokenId });
                     });
             }))(this.notifierService, this.transactionStatus);
         }
@@ -176,8 +196,6 @@ export class CryptoWalletService {
         }
     }
 
-    
-
     public async levelUp(tokenId, address): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
@@ -185,13 +203,13 @@ export class CryptoWalletService {
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.refillArmor(tokenId).send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.levelUp(tokenId).send({ from: this.walletInfo.wallet })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
-                        trans.next({ status: "Refill completed", data: tokenId });
+                        trans.next({ status: "LvlUp completed", data: tokenId });
                     });
             }))(this.notifierService, this.transactionStatus);
         }
@@ -199,7 +217,28 @@ export class CryptoWalletService {
             console.log("err", err);
         }
     }
-
+    
+    // public async challenge(tokenId, address, opponnentAddress, opponnentTokenId): Promise<any> {
+    //     const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+    //     const trainerAddress = await contractFighter.methods.trainerContract().call();
+    //     const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+    //     try {
+    //         // call transfer function
+    //         return ((toaster, trans) => new Promise((resolve, reject) => {
+    //             contractTrainer.methods.challenge(tokenId, opponnentAddress, opponnentTokenId).send({ from: this.walletInfo.wallet })
+    //                 .once("transactionHash", function (hash) {
+    //                     resolve({ result: true, data: hash });
+    //                 })
+    //                 .then(function (receipt) {
+    //                     toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+    //                     trans.next({ status: "Challenge completed", data: tokenId });
+    //                 });
+    //         }))(this.notifierService, this.transactionStatus);
+    //     }
+    //     catch (err) {
+    //         console.log("err", err);
+    //     }
+    // }
 
     public async refillArmor(tokenId, address): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);

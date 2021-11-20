@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Clipboard } from "@angular/cdk/clipboard";
 import { ActivatedRoute } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
@@ -18,9 +19,12 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     public id;
     public address;
     public fighter;
+    public attacker;
+    public deffender;
     public waiting = false;
     public allowed = false;
     public allowedKennel = false;
+    public showDialog = false;
     public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; fightSymbol: string } =
         { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, fightSymbol: undefined };
     public tx = "";
@@ -33,6 +37,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         private nftContractsService: NftContractsService,
         private cryptoWalletService: CryptoWalletService,
         private nftActionsService: NftActionsService,
+        private clipboard: Clipboard,
         private ngxSpinnerService: NgxSpinnerService,
         private cd: ChangeDetectorRef,
         private notifyService: NotifyService) { }
@@ -150,8 +155,9 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
                 if (fighter) {
                     fighter.waiting = false;
-                    fighter.tx = undefined;
+                    fighter.tx = undefined;                    
                     this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
+
                     this.notifyService.pop("success", "Fight finished ...", "Fight completed");
                 }
             } else if (data.status === "Training completed") {
@@ -174,7 +180,18 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
                     this.notifyService.pop("success", "Your fighter's armor succesfully updated", "Refill completed");
                 }
+            } else if (data.status === "LvlUp completed") {
+                const fighter = this.fighter.token === data.data ? this.fighter : undefined;
+                console.log("LvlUp completed", data.data);
+
+                if (fighter) {
+                    fighter.waiting = false;
+                    fighter.tx = undefined;
+                    this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
+                    this.notifyService.pop("success", "Your fighter is upgraded", "LevelUp completed");
+                }
             }
+            
             this.cd.detectChanges();
         }));
     }
@@ -186,6 +203,18 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         await this.nftActionsService.revealFighter(fighter, this.address);
         this.cd.detectChanges();
     }
+
+    // private testing() {
+    //     this.attacker = {};
+    //     this.deffender = {};
+    //     this.showDialog = true;
+    //     return;
+
+    // }
+
+    // public challengeCopy() {
+    //     this.clipboard.copy(this.address + "/" + this.id);
+    // }
 
     ngOnDestroy() {
         this.subscription.unsubscribe();

@@ -1,0 +1,5 @@
+<div [@dialog] *ngIf="visible" class="dialog">
+	<ng-content></ng-content>
+	<a href="javascript:void(0)" id="fbplus-close" style="display: inline;" (click)="close()"></a>
+</div>
+<div *ngIf="visible" class="overlay" (click)="close()"></div>

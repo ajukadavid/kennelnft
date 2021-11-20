@@ -65,7 +65,8 @@
                                 class="btn btn-warning btn-round">REVEAL</a>
                             <a (click)="levelUp(fighter)"
                                 *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter.imageUploaded && !fighter?.waiting && fighter.upgradable"
-                                class="btn btn-rose btn-round"><span class="custom-badge" matBadgePosition="below after"
+                                class="btn btn-warning btn-round"><span class="custom-badge"
+                                    matBadgePosition="below after"
                                     [matBadge]="prices.lvlUpPrice + ' ' + prices.tokenSymbol"
                                     matBadgeOverlap="false">LEVEL UP</span></a>
                             <a href="https://testnet.bscscan.com/tx/{{fighter.tx}}"
@@ -102,9 +103,30 @@
                     </div>
                     <div class="buttons center">
                         <a routerLink="/squad/{{address}}" class="btn btn-primary btn-round">SQUAD</a>
+                        <a routerLink="/history/{{address}}/{{id}}" class="btn btn-warning btn-round">FIGHT HISTORY</a>
+                        <!-- <a (click)="challengeCopy()" class="btn btn-warning btn-round">CHALLENGE COPY</a> -->
                     </div>
                 </mat-drawer-content>
             </mat-drawer-container>
+            <app-fancy-dialog *ngIf="attacker && deffender" [(visible)]="showDialog">
+                <h1 class="center">You win!</h1>
+                <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
+                    <div class="article fancy" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
+                        <div class="title">Attacker</div>
+                        <div class="img">
+                            <a routerLink="/detail/{{attacker?.address}}/{{attacker?.token}}" target="_blank"><img src="{{attacker?.metadata.image}}" onerror="this.src='/assets/img/siluette.png';"></a>
+                        </div>
+                        <p>{{attacker?.metadata?.name}}</p>
+                    </div>
+                    <div class="article fancy" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
+                        <div class="title">Defender</div>
+                        <div class="img">
+                            <a routerLink="/detail/{{deffender?.address}}/{{deffender?.token}}" target="_blank"><img src="{{deffender?.metadata.image}}" onerror="this.src='/assets/img/siluette.png';"></a>
+                        </div>
+                        <p>{{deffender?.metadata?.name}}</p>
+                    </div>
+                </div>
+            </app-fancy-dialog>  
         </div>
     </div>
     <app-page-bottom></app-page-bottom>

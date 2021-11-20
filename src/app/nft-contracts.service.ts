@@ -174,6 +174,28 @@ export class NftContractsService {
         }
     }
 
+    public async getOpponents(address, tokenId): Promise<any[]> {
+        try {
+            const results = [];
+            this.initWeb3();
+            const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+            let teams = await contractKombat.methods.allTeams().call();
+            console.log(teams);
+            for (const team of teams) {
+                const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
+                const metadata = await contractFighter.methods.tokenURI(0).call();
+                const base64 = metadata.split(",")[1];
+                const json = JSON.parse(Buffer.from(base64, 'base64').toString('ascii').replace("\"attributes\":\"", "\"attributes\":").replace("]\", \"image", "], \"image"));
+                results.push({ address: team, id: 1, metadata: json, result: 1, blockNumber: 1 });
+            }
+            return results;
+        } catch (ex) {
+            this.notifierService.pop("error", "We can't check Kombat contract, try again later", "Contract connect");
+            // not connected
+            console.log(ex);
+            return [];
+        }
+    }
 
     public async getFighterBasicInfo(address, tokenId): Promise<any> {
         try {
