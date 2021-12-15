@@ -3,6 +3,13 @@
         <div class="navbar-wrapper">
             <div class="logo"><a routerLink="/">KENNEL NFT GAME</a></div>
         </div>
+        <div class="justify-content-center">
+            <span class="btn btn-primary btn-round" [matBadge]="'Total winnings'"
+            [matBadgeColor]="'accent'">{{winnings + 'BNB'}}</span>
+            &nbsp;
+            <span class="btn btn-info btn-round" [matBadge]="'Possible win'"
+            [matBadgeColor]="'accent'">{{possible + 'BNB'}}</span>
+        </div>
         <div class="justify-content-end">
             <app-wallet-info></app-wallet-info>
         </div>

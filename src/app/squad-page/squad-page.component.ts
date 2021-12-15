@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 import { Subscription } from 'rxjs';
+import { TRANSACTIONURL } from '../constants';
 import { CryptoWalletService } from '../crypto-wallet.service';
 import { NftActionsService } from '../nft-actions.service';
 import { NftContractsService } from '../nft-contracts.service';
@@ -16,9 +17,12 @@ import { NotifyService } from '../notify.service';
 })
 export class SquadPageComponent implements OnInit, OnDestroy {
 
+    public tranurl = TRANSACTIONURL;
     public address;
     public info;
     public fighters = [];
+    public fighterName = "";
+    public showDialog = false;
     public waiting = false;
     public waitingKennel = false;
     public allowed = false;
@@ -59,12 +63,22 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     }
 
     public async recruit() {
-        const result = await this.cryptoWalletService.createFighter(this.address);
-        if (result.result === true) {
-            this.waiting = result.result;
-            this.tx = result.data;
-            this.cd.detectChanges();
-        }
+//        if (this.fighterName) {
+            // pass fighter name to contract
+            const result = await this.cryptoWalletService.createFighter(this.address);
+            if (result.result === true) {
+                this.waiting = result.result;
+                this.tx = result.data;
+                this.cd.detectChanges();
+            }
+            this.fighterName = "";
+        // } else {
+        //     this.notifyService.pop("error", "Missing fighter name", "Recruit problem");
+        // }
+    }
+
+    public recruitFighter() {
+        this.showDialog = true;
     }
 
     private subscribeToWallet() {
@@ -112,6 +126,9 @@ export class SquadPageComponent implements OnInit, OnDestroy {
                 this.waitingKennel = false;
                 this.allowedKennel = true;
                 this.txKennel = undefined;
+            } else if (data.status === "NFT cancelled") {                
+                this.waitingKennel = false;
+                this.waiting = false;
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);
                 console.log("Fight completed", data.data);
@@ -166,11 +183,11 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    public async revealFighter(fighter) {
-        this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
-        await this.nftActionsService.revealFighter(fighter, this.address);
-        this.cd.detectChanges();
-    }
+    // public async revealFighter(fighter) {
+    //     this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
+    //     await this.nftActionsService.revealFighter(fighter, this.address);
+    //     this.cd.detectChanges();
+    // }
 
     public async fight(fighter) {
         const result = await this.cryptoWalletService.fight(fighter.token, this.address);

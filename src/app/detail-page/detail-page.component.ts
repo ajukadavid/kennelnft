@@ -7,6 +7,8 @@ import { CryptoWalletService } from '../crypto-wallet.service';
 import { NftActionsService } from '../nft-actions.service';
 import { NftContractsService } from '../nft-contracts.service';
 import { NotifyService } from '../notify.service';
+import { TRANSACTIONURL } from '../constants';
+import * as _ from "lodash";
 
 @Component({
     selector: 'app-detail-page',
@@ -16,6 +18,7 @@ import { NotifyService } from '../notify.service';
 })
 export class DetailPageComponent implements OnInit, OnDestroy {
 
+    public tranurl = TRANSACTIONURL;
     public id;
     public address;
     public fighter;
@@ -24,9 +27,12 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     public waiting = false;
     public allowed = false;
     public allowedKennel = false;
+    public showName = false;
     public showDialog = false;
-    public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; fightSymbol: string } =
-        { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, fightSymbol: undefined };
+    public attackResults;
+    public fighterName = "";
+    public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string } =
+        { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined };
     public tx = "";
     private subscription: Subscription = new Subscription();
     public get walletInfo(): any {
@@ -135,6 +141,20 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         }));
     }
 
+    private async checkResults(receipt) {
+        let attackResult;
+        if (receipt.events && receipt.events.attackResult) {
+            attackResult = {..._.cloneDeep(receipt.events.attackResult.returnValues), result: receipt.events.attackResult.returnValues.AttackSuccess === true ? "Win" : "Lost"};
+        }
+
+        if (attackResult) {
+            const defender = await this.nftContractsService.getFighterBasicInfo(attackResult.defenderContract, attackResult.defender);
+            this.attackResults = { attacker: this.fighter, defender, result: attackResult.result};
+            console.log("attackResults", this.attackResults);
+            this.showDialog = true;
+            this.cd.detectChanges();
+        }
+    }
 
     private subscribeToTransactions() {
         this.subscription.add(this.cryptoWalletService.transactionStatus$.subscribe(async (data) => {
@@ -148,16 +168,26 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     fighter.waiting = false;
                     fighter.tx = undefined;
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Reveal fighter");
-                }
+                }                
+            } else if (data.status === "Name completed") {
+                const fighter = this.fighter.token === data.data ? this.fighter : undefined;
+                console.log("Name completed", data.data);
+
+                if (fighter) {
+                    fighter.waiting = false;
+                    fighter.tx = undefined;
+                    this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
+                    this.notifyService.pop("success", "Your fighter was succesfully updated", "Name fighter");
+                }                
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighter.token === data.data.tokenId ? this.fighter : undefined;
                 console.log("Fight completed", data.data);
 
                 if (fighter) {
                     fighter.waiting = false;
-                    fighter.tx = undefined;                    
+                    fighter.tx = undefined;
                     this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
-
+                    this.checkResults(data.data);
                     this.notifyService.pop("success", "Fight finished ...", "Fight completed");
                 }
             } else if (data.status === "Training completed") {
@@ -170,6 +200,12 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Training completed");
                 }
+            } else if (data.status === "NFT cancelled") {
+                const fighter = (this.fighter.token === ( data?.data?.tokenId ? data.data?.tokenId : data.data)) ? this.fighter : undefined;
+                if (fighter) {
+                    fighter.waiting = false;
+                }
+                this.waiting = false;
             } else if (data.status === "Refill completed") {
                 const fighter = this.fighter.token === data.data ? this.fighter : undefined;
                 console.log("Refill completed", data.data);
@@ -191,26 +227,39 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     this.notifyService.pop("success", "Your fighter is upgraded", "LevelUp completed");
                 }
             }
-            
+
             this.cd.detectChanges();
         }));
     }
 
+    public nameFighterPrep() {
+        this.showName = true;
+    }
+
     public async revealFighter(fighter) {
+        // pass fighter name to contract
         this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
         fighter.waiting = true;
         this.cd.detectChanges();
         await this.nftActionsService.revealFighter(fighter, this.address);
-        this.cd.detectChanges();
+        this.cd.detectChanges();    
     }
 
-    // private testing() {
-    //     this.attacker = {};
-    //     this.deffender = {};
-    //     this.showDialog = true;
-    //     return;
-
-    // }
+    public async nameFighter(fighter) {
+        this.showName = false;
+        if (this.fighterName) {
+            // pass fighter name to contract
+            const result = await this.cryptoWalletService.nameFighter(fighter.token, this.address, this.fighterName);
+            if (result.result === true) {
+                fighter.tx = result.data;
+                fighter.waiting = true;
+                this.cd.detectChanges();
+            }   
+            this.fighterName = "";
+        } else {
+            this.notifyService.pop("error", "Missing fighter name", "Name fighter problem");
+        }
+    }
 
     // public challengeCopy() {
     //     this.clipboard.copy(this.address + "/" + this.id);

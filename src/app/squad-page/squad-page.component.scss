@@ -65,3 +65,21 @@ img {
         border-radius: 5px;
     }
 }
+
+.fighter-name {
+    text-align: center;
+
+    h1 {
+        font-weight: bolder;
+        margin-bottom: 10px;
+    }
+
+    input {
+        border: black 1px solid;
+        border-radius: 20px;
+        padding: 13px;
+        font-size: 20px;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+}

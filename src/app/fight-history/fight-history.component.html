@@ -28,23 +28,29 @@
                         <mat-icon>live_help</mat-icon>
                     </button>
                     <div class="header">
-                        {{myfighter.metadata.name}}
+                        FIGHTS<br>
+                        {{myfighter.metadata.name}} 
                     </div>
                     <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
                         <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%"
-                            [ngClass]="{red: fighter.result===0, green: fighter.result===1}"
+                            [ngClass]="{green: fighter.result==='Win', red: fighter.result==='Lost'}"
                             *ngFor="let fighter of opponents | orderBy: 'blockNumber' : true">
+                            <div class="result">{{fighter.type}} - {{fighter.result}}</div>
+                            <div class="time">{{fighter.timeTxt}}</div>
                             <div class="img">
-                                <a routerLink="/detail/{{fighter.address}}/{{fighter.id}}"><img
+                                <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"><img
                                         src="{{fighter.metadata.image}}" onerror="this.src='/assets/img/siluette.png';">
                                 </a>
                             </div>
-                            <p>{{fighter.metadata.description}}</p>
-                            <p>{{fighter.result}}</p>
+                            <p>{{fighter.metadata.name}}<br>                            
+                            <a class="link" href="{{tranurl}}{{fighter.tx}}" target="_blank">{{fighter.tx.substr(0,4)}}...{{fighter.tx.substr(-5)}}</a></p>
                         </div>
                     </div>
                     <div class="buttons center">
-                        <a routerLink="/detail/{{address}}/{{id}}" class="btn btn-primary btn-round">DETAIL</a>
+                        <a routerLink="/detail/{{address}}/{{id}}" class="btn btn-warning btn-round">DETAIL</a>
+                        <a (click)="loadOlder()" class="btn btn-info btn-round"><span class="custom-badge"
+                                matBadgePosition="below after" [matBadge]="'Blocks > ' + lastBlock"
+                                matBadgeOverlap="false">LOAD OLDER FIGHTS</span></a>
                     </div>
                 </mat-drawer-content>
             </mat-drawer-container>

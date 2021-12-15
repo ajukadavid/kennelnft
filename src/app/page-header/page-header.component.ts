@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NftContractsService } from '../nft-contracts.service';
 
 @Component({
   selector: 'app-page-header',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PageHeaderComponent implements OnInit {
 
-  constructor() { }
+    public winnings = "0";
+    public possible = "0";
 
-  ngOnInit(): void {
+  constructor(private nftContractsService: NftContractsService) { }
+
+  async ngOnInit() {
+      this.winnings = await this.nftContractsService.getWinnings();
+      this.possible = await this.nftContractsService.getPossible();
+
   }
 
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
+import { TRANSACTIONURL } from '../constants';
 import { CryptoWalletService } from '../crypto-wallet.service';
 import { NftActionsService } from '../nft-actions.service';
 import { NftContractsService } from '../nft-contracts.service';
@@ -13,6 +14,7 @@ import { NotifyService } from '../notify.service';
 })
 export class UserPageComponent implements OnInit {
 
+    public tranurl = TRANSACTIONURL;
     private subscription: Subscription = new Subscription();
     public get walletInfo(): any {
         return this.cryptoWalletService.walletInfo;
@@ -40,7 +42,6 @@ export class UserPageComponent implements OnInit {
         this.subscribeToDataStream();
         this.fighters = [];
         this.loading = true;
-        await this.cryptoWalletService.getUserFightersInfo();
         this.fightInfo = await this.nftContractsService.getFightInfo();
         this.loading = false;
         this.ngxSpinnerService.hide();
@@ -61,6 +62,8 @@ export class UserPageComponent implements OnInit {
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
             if (this.walletInfo.isConnected === true) {
+                this.fighters = [];
+                await this.cryptoWalletService.getUserFightersInfo();                
                 const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
                 this.allowedKennel = allowedKennel > this.fightInfo.fightPrice;
             } else {
@@ -90,6 +93,11 @@ export class UserPageComponent implements OnInit {
                 this.waitingKennel = false;
                 this.allowedKennel = true;
                 this.tx = undefined;
+            } else if (data.status === "NFT cancelled") {       
+                const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);     
+                if (fighter) {
+                    fighter.waiting = false;
+                }                                    
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);
                 console.log("Fight completed", data.data);

@@ -134,7 +134,7 @@ export class CryptoWalletService {
     }
 
     public async fight(tokenId, address): Promise<any> {
-        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+        const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -146,7 +146,10 @@ export class CryptoWalletService {
                         console.log("receipt", receipt);
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Fight completed", data: { ...receipt, tokenId } });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: { tokenId } });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
@@ -155,7 +158,7 @@ export class CryptoWalletService {
     }
 
     public async gain(tokenId, address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -166,7 +169,10 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Gain completed", data: tokenId });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
@@ -175,9 +181,9 @@ export class CryptoWalletService {
     }
 
     public async train(tokenId, address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -188,7 +194,10 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Training completed", data: tokenId });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
@@ -197,9 +206,9 @@ export class CryptoWalletService {
     }
 
     public async levelUp(tokenId, address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -210,18 +219,21 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "LvlUp completed", data: tokenId });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
             console.log("err", err);
         }
     }
-    
+
     // public async challenge(tokenId, address, opponnentAddress, opponnentTokenId): Promise<any> {
-    //     const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+    //     const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
     //     const trainerAddress = await contractFighter.methods.trainerContract().call();
-    //     const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+    //     const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
     //     try {
     //         // call transfer function
     //         return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -241,9 +253,9 @@ export class CryptoWalletService {
     // }
 
     public async refillArmor(tokenId, address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -254,7 +266,10 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Refill completed", data: tokenId });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
@@ -264,9 +279,9 @@ export class CryptoWalletService {
 
 
     public async createFighter(address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -277,7 +292,10 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Fighter completed", data: receipt });
-                    });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled" });
+                    });;
             }))(this.notifierService, this.transactionStatus);
         }
         catch (err) {
@@ -286,10 +304,10 @@ export class CryptoWalletService {
     }
 
     public async revealFighter(tokenId, address, hash): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         console.log("trainerAddress", trainerAddress);
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         console.log("contractTrainer", contractTrainer);
         try {
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -300,6 +318,34 @@ export class CryptoWalletService {
                     .then(function (receipt) {
                         toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                         trans.next({ status: "Reveal completed", data: tokenId });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
+                    });;
+            }))(this.notifierService, this.transactionStatus);
+        }
+        catch (err) {
+            console.log("err", err);
+            return Promise.resolve({ result: false });
+        }
+    }
+    
+    public async nameFighter(tokenId, address, fighterName): Promise<any> {
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const trainerAddress = await contractFighter.methods.trainerContract().call();
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        try {
+            return ((toaster, trans) => new Promise((resolve, reject) => {
+                contractTrainer.methods.setTokenName(tokenId, fighterName).send({ from: this.walletInfo.wallet })
+                    .once("transactionHash", function (hash) {
+                        resolve({ result: true, data: hash });
+                    })
+                    .then(function (receipt) {
+                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
+                        trans.next({ status: "Name completed", data: tokenId });
+                    })
+                    .catch(() => {
+                        trans.next({ status: "NFT cancelled", data: tokenId });
                     });
             }))(this.notifierService, this.transactionStatus);
         }
@@ -309,18 +355,18 @@ export class CryptoWalletService {
         }
     }
 
+
     public async checkAllowed(address): Promise<number> {
         try {
             if (this.walletInfo.wallet) {
-                const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+                const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
                 const trainerAddress = await contractFighter.methods.trainerContract().call();
-                const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+                const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
                 const tokenAddress = await contractTrainer.methods.tokenAddress().call();
 
                 if (tokenAddress) {
                     const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
                     const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
-                    console.log("allow", allow);
                     return allow;
                 }
             }
@@ -338,7 +384,6 @@ export class CryptoWalletService {
             if (this.walletInfo.wallet) {
                 const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
                 const allow = await contractToken.methods.allowance(this.walletInfo.wallet, KOMBATADDRESS).call();
-                console.log("allow", allow);
                 return allow;
             }
             return -1;
@@ -363,7 +408,10 @@ export class CryptoWalletService {
                         .then(function (receipt) {
                             toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                             trans.next({ status: "Approve kennel completed", data: receipt });
-                        });
+                        })
+                        .catch(() => {
+                            trans.next({ status: "NFT cancelled" });
+                        });;
                 }))(this.notifierService, this.transactionStatus);
             }
             catch (err) {
@@ -374,9 +422,9 @@ export class CryptoWalletService {
     }
 
     public async approve(address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         const tokenAddress = await contractTrainer.methods.tokenAddress().call();
         if (tokenAddress) {
             const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
@@ -391,7 +439,10 @@ export class CryptoWalletService {
                         .then(function (receipt) {
                             toaster.pop("success", "Your transaction is confirmed", "Transaction info");
                             trans.next({ status: "Approve completed", data: receipt });
-                        });
+                        })
+                        .catch(() => {
+                            trans.next({ status: "NFT cancelled" });
+                        });;
                 }))(this.notifierService, this.transactionStatus);
             }
             catch (err) {
@@ -402,11 +453,11 @@ export class CryptoWalletService {
     }
 
     public async getUserFightersInfo(): Promise<any> {
-        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
+        const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
         let teams = await contractKombat.methods.allTeams().call();
         const promises = [];
         for (const team of teams) {
-            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
+            const contractFighter = new this.web3.eth.Contract(fighter.abi, team);
             let numNfts = await contractFighter.methods.balanceOf(this.walletInfo.wallet).call();
             for (let i = 0; i < numNfts; i++) {
                 const nft = await contractFighter.methods.tokenOfOwnerByIndex(this.walletInfo.wallet, i).call();

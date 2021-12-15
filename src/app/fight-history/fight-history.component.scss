@@ -1,6 +1,7 @@
 .article {
     margin: 20px;
     padding: 20px;
+    height: 250px;
     width: 100%;
     opacity: 90%;
     border: solid 1px #555;
@@ -20,7 +21,7 @@
     }
 
     .img {
-        height: calc(100% - 60px);
+        height: calc(100% - 90px);
 
         img {
             max-width: 100%;
@@ -45,7 +46,7 @@
 }
 
 .header {
-    font-size: 60px;
+    font-size: 40px;
     font-weight: bolder;
     text-align: center;
     padding-bottom: 15px;
@@ -89,9 +90,19 @@
 }
 
 .red {
-    background-color: red;
+    background-color: rgb(241, 135, 135);
 }
 
 .green {
     background-color: lightgreen;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+}
+
+.result {
+    font-weight: bolder;
+    font-size: large;
 }

@@ -35,7 +35,7 @@
                             *ngFor="let fighter of fighters | orderBy: 'token' : true">
                             <mat-card>
                                 <mat-card-header>
-                                    <mat-card-title>{{fighter.metadata.name}}{{fighter.token}}</mat-card-title>
+                                    <mat-card-title>{{fighter.metadata.name}}</mat-card-title>
                                 </mat-card-header>
                                 <div class="img">
                                     <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
@@ -49,12 +49,12 @@
                                 <mat-card-actions class="custom-badge">
                                     <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"
                                         class="btn btn-success btn-round">DETAIL</a>
-                                    <a *ngIf="allowedKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded && !fighter?.waiting"
+                                    <!-- <a *ngIf="allowedKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && fighter.imageUploaded && !fighter?.waiting"
                                         class="btn btn-primary btn-round" (click)="fight(fighter)"><span
                                             matBadgePosition="below after"
                                             [matBadge]="fightInfo.fightPrice + ' ' +fightInfo.fightSymbol"
                                             matBadgeOverlap="false">FIGHT</span></a>
-                                    <a href="https://testnet.bscscan.com/tx/{{fighter.tx}}"
+                                    <a href="{{tranurl}}{{fighter.tx}}"
                                         *ngIf="waitingKennel && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true"
                                         class="btn btn-info btn-round" title="Click to show transaction"
                                         target="_blank">WAITING</a>
@@ -63,7 +63,7 @@
                                         (click)="approveKennel()">APPROVE</a>
                                     <a (click)="revealFighter(fighter)"
                                         *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && walletInfo?.isConnected === true && !fighter.imageUploaded && !fighter?.waiting"
-                                        class="btn btn-warning btn-round">REVEAL</a>
+                                        class="btn btn-warning btn-round">REVEAL</a> -->
                                 </mat-card-actions>
                             </mat-card>
                         </div>
