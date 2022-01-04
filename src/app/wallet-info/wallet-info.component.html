@@ -1,4 +1,10 @@
 <ul class="navbar-nav">
+    <li class="nav-item switcher">
+        <a href="javascript:void(0)" (click)="switchColor()"><span class="material-icons">
+            light_mode
+            </span>            
+        </a>
+    </li>    
     <li class="nav-item" *ngIf="walletInfo && walletInfo?.wallet!=='' && walletInfo.isConnected">
         <a href="javascript:void(0)" class="btn btn-warning btn-round" href="javascript:void(0)"
             routerLink="/dashboard">Your fighters</a>

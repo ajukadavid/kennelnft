@@ -24,9 +24,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     public fighterName = "";
     public showDialog = false;
     public waiting = false;
-    public waitingKennel = false;
-    public allowed = false;
-    public allowedKennel = false;
+    public allowed = {allowed: false, needed: "0"};
     public tx = "";
     public txKennel = "";
     private lastFighter = 0;
@@ -65,7 +63,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     public async recruit() {
 //        if (this.fighterName) {
             // pass fighter name to contract
-            const result = await this.cryptoWalletService.createFighter(this.address);
+            const result = await this.cryptoWalletService.createFighter(this.address, this.info.origRecruit);
             if (result.result === true) {
                 this.waiting = result.result;
                 this.tx = result.data;
@@ -84,14 +82,11 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
             console.log("subscribeToWallet", data);
-            if (this.walletInfo.isConnected === true) {
+            if (this.walletInfo?.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
-                this.allowed = allowed > this.info.recruitPrice;
-                const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
-                this.allowedKennel = allowedKennel > this.info.fightPrice;
+                this.allowed = allowed;
             } else {
-                this.allowed = false;
-                this.allowedKennel = false;
+                this.allowed = {allowed: false, needed: "0"};
             }
             this.cd.detectChanges();
         }));
@@ -117,17 +112,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Reveal fighter");
                     console.log("fighter", fighter);
                 }
-            } else if (data.status === "Approve completed") {
-                console.log("Approve", data);
-                this.waiting = false;
-                this.allowed = true;
-            } else if (data.status === "Approve kennel completed") {
-                console.log("Approve kennel", data);
-                this.waitingKennel = false;
-                this.allowedKennel = true;
-                this.txKennel = undefined;
             } else if (data.status === "NFT cancelled") {                
-                this.waitingKennel = false;
                 this.waiting = false;
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighters.find((fight) => fight.token === data.data.tokenId);
@@ -163,43 +148,6 @@ export class SquadPageComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.cd.detectChanges();
     }
-
-
-    public async approve() {
-        const result = await this.cryptoWalletService.approve(this.address);
-        if (result.result === true) {
-            this.tx = result.data;
-            this.waiting = true;
-            this.cd.detectChanges();
-        }
-    }
-
-    public async approveKennel() {
-        const result = await this.cryptoWalletService.approveKennel();
-        if (result.result === true) {
-            this.txKennel = result.data;
-            this.waitingKennel = true;
-            this.cd.detectChanges();
-        }
-    }
-
-    // public async revealFighter(fighter) {
-    //     this.notifyService.pop("info", "Preparing data for fighter", "Reveal fighter");
-    //     await this.nftActionsService.revealFighter(fighter, this.address);
-    //     this.cd.detectChanges();
-    // }
-
-    public async fight(fighter) {
-        const result = await this.cryptoWalletService.fight(fighter.token, this.address);
-        if (result.result === true) {
-            fighter.waiting = true;
-            fighter.tx = result.data;
-        } else {
-            fighter.waiting = false;
-        }
-        this.cd.detectChanges();
-    }
-
 
     ngOnDestroy() {
         this.subscription.unsubscribe();

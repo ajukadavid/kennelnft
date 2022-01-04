@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { DOCUMENT } from "@angular/common";
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ThemePalette } from "@angular/material/core";
 import { Subscription } from "rxjs";
 import { CryptoWalletService } from "../crypto-wallet.service";
@@ -18,7 +19,9 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
     public showMenu = false;
 
-    constructor(private cryptoWalletService: CryptoWalletService,
+    constructor(
+        @Inject(DOCUMENT) private document: Document,
+        private cryptoWalletService: CryptoWalletService,
         private cdr: ChangeDetectorRef) { }
 
     ngOnInit(): void {
@@ -33,6 +36,7 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
             }
             this.cdr.detectChanges();
         }));
+        this.checkColor();
     }
 
     ngOnDestroy() {
@@ -47,5 +51,30 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
         this.cryptoWalletService.disconnectWallet();
     }
 
+    public switchColor() {
+        const bodyElement = this.document.body;
+        if (bodyElement) {
+            if (bodyElement.classList.contains("light")) {
+                bodyElement.classList.remove("light");
+                bodyElement.classList.add("dark");
+                localStorage.setItem("color-scheme", "dark");
+            } else {
+                bodyElement.classList.remove("dark");
+                bodyElement.classList.add("light");
+                localStorage.setItem("color-scheme", "light");
+            }
+        }
+    }
+
+    private checkColor() {
+        const color = localStorage.getItem("color-scheme");
+        if (color === "dark") {
+            const bodyElement = this.document.body;
+            if (bodyElement) {
+                bodyElement.classList.remove("light");
+                bodyElement.classList.add("dark");
+            }
+        }
+    }
 
 }

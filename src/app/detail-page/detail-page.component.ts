@@ -24,15 +24,18 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     public fighter;
     public attacker;
     public deffender;
+    public showCanFight = false;
     public waiting = false;
-    public allowed = false;
-    public allowedKennel = false;
+    public allowed = { allowed: false, needed :"0"};
+    public allowedKennel = { allowed: false, needed :"0"};
     public showName = false;
     public showDialog = false;
     public attackResults;
     public fighterName = "";
-    public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string } =
-        { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined };
+    public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string;
+        origArmorPrice: number; origLvlUpPrice: number; origTrainingPrice: number; origFightPrice: number; origNamePrice: number } =
+        { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined,
+            origArmorPrice: undefined, origLvlUpPrice: undefined, origTrainingPrice: undefined, origFightPrice: undefined, origNamePrice: undefined };
     public tx = "";
     private subscription: Subscription = new Subscription();
     public get walletInfo(): any {
@@ -65,7 +68,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
 
     public async fight(fighter) {
-        const result = await this.cryptoWalletService.fight(fighter.token, this.address);
+        const result = await this.cryptoWalletService.fight(fighter.token, this.address, this.prices.origFightPrice);
         if (result.result === true) {
             fighter.waiting = true;
             fighter.tx = result.data;
@@ -76,7 +79,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     }
 
     public async train(fighter) {
-        const result = await this.cryptoWalletService.train(fighter.token, this.address);
+        const result = await this.cryptoWalletService.train(fighter.token, this.address, this.prices.origTrainingPrice);
         if (result.result === true) {
             fighter.waiting = true;
             fighter.tx = result.data;
@@ -87,7 +90,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     }
 
     public async levelUp(fighter) {
-        const result = await this.cryptoWalletService.levelUp(fighter.token, this.address);
+        const result = await this.cryptoWalletService.levelUp(fighter.token, this.address, this.prices.origLvlUpPrice);
         if (result.result === true) {
             fighter.waiting = true;
             fighter.tx = result.data;
@@ -98,7 +101,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     }
 
     public async refillArmor(fighter) {
-        const result = await this.cryptoWalletService.refillArmor(fighter.token, this.address);
+        const result = await this.cryptoWalletService.refillArmor(fighter.token, this.address, this.prices.origArmorPrice);
         if (result.result === true) {
             fighter.waiting = true;
             fighter.tx = result.data;
@@ -108,34 +111,18 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         this.cd.detectChanges();
     }
 
-    public async approve() {
-        const result = await this.cryptoWalletService.approve(this.address);
-        if (result.result === true) {
-            this.tx = result.data;
-            this.waiting = true;
-            this.cd.detectChanges();
-        }
-    }
-
-    public async approveKennel() {
-        const result = await this.cryptoWalletService.approveKennel();
-        if (result.result === true) {
-            this.tx = result.data;
-            this.waiting = true;
-            this.cd.detectChanges();
-        }
-    }
-
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
             if (this.walletInfo.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
-                this.allowed = allowed > Math.max(this.prices.trainingPrice, this.prices.armorPrice);
+                this.allowed = allowed;
                 const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
-                this.allowedKennel = allowedKennel > this.prices.fightPrice;
+                this.allowedKennel = allowedKennel;
+                this.showCanFight = await this.cryptoWalletService.showCanFight(this.address, this.id);
             } else {
-                this.allowed = false;
-                this.allowedKennel = false;
+                this.allowed = {allowed: false, needed : "0"};
+                this.allowedKennel = {allowed: false, needed : "0"};
+                this.showCanFight = false;
             }
             this.cd.detectChanges();
         }));
@@ -149,8 +136,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
         if (attackResult) {
             const defender = await this.nftContractsService.getFighterBasicInfo(attackResult.defenderContract, attackResult.defender);
-            this.attackResults = { attacker: this.fighter, defender, result: attackResult.result};
-            console.log("attackResults", this.attackResults);
+            this.attackResults = { attacker: this.fighter, defender, result: attackResult.result, winnings: attackResult.winnings};
             this.showDialog = true;
             this.cd.detectChanges();
         }
@@ -158,10 +144,8 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
     private subscribeToTransactions() {
         this.subscription.add(this.cryptoWalletService.transactionStatus$.subscribe(async (data) => {
-            console.log("subscribeToTransactions", data);
             if (data.status === "Reveal completed") {
                 const fighter = this.fighter.token === data.data ? this.fighter : undefined;
-                console.log("fighter", fighter);
 
                 if (fighter) {
                     fighter.imageUploaded = true;
@@ -171,7 +155,6 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                 }                
             } else if (data.status === "Name completed") {
                 const fighter = this.fighter.token === data.data ? this.fighter : undefined;
-                console.log("Name completed", data.data);
 
                 if (fighter) {
                     fighter.waiting = false;
@@ -181,19 +164,17 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                 }                
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighter.token === data.data.tokenId ? this.fighter : undefined;
-                console.log("Fight completed", data.data);
 
                 if (fighter) {
+                    this.showCanFight = await this.cryptoWalletService.showCanFight(this.address, this.id);
+                    this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
                     fighter.waiting = false;
                     fighter.tx = undefined;
-                    this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
                     this.checkResults(data.data);
                     this.notifyService.pop("success", "Fight finished ...", "Fight completed");
                 }
             } else if (data.status === "Training completed") {
                 const fighter = this.fighter.token === data.data ? this.fighter : undefined;
-                console.log("Training completed", data.data);
-
                 if (fighter) {
                     fighter.waiting = false;
                     fighter.tx = undefined;
@@ -249,7 +230,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         this.showName = false;
         if (this.fighterName) {
             // pass fighter name to contract
-            const result = await this.cryptoWalletService.nameFighter(fighter.token, this.address, this.fighterName);
+            const result = await this.cryptoWalletService.nameFighter(fighter.token, this.address, this.fighterName, this.prices.origNamePrice);
             if (result.result === true) {
                 fighter.tx = result.data;
                 fighter.waiting = true;

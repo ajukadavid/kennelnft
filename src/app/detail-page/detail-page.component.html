@@ -30,46 +30,45 @@
                     <div class="header">
                         {{fighter.metadata.name}}
                         <div class="buttons"
-                            *ngIf="!allowed && walletInfo?.isConnected === true && fighter.ownerOf?.toLowerCase() === walletInfo?.wallet.toLowerCase()">
-                            <a *ngIf="!waiting" href="javascript: void(0);" class="btn btn-danger btn-round"
-                                title="Approve your {{prices.tokenSymbol}} for fighter improvements"
-                                (click)="approve()">APPROVE
-                                {{prices.tokenSymbol}}</a>
-                            <a *ngIf="waiting" href="{{tranurl}}{{tx}}" class="btn btn-danger btn-round"
-                                title="Click to show transaction" target="_blank">WAITING ...</a>
-                        </div>
-                        <div class="buttons"
-                            *ngIf="walletInfo?.wallet && walletInfo?.isConnected === true && allowed && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase()">
+                            *ngIf="walletInfo?.wallet && walletInfo?.isConnected === true && fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase()">
+                            <div class="btn btn-danger break-button"
+                                *ngIf="!allowed.allowed && walletInfo?.isConnected === true && fighter.ownerOf?.toLowerCase() === walletInfo?.wallet.toLowerCase()">
+                                You need to hold at least {{allowed.needed}} {{prices.tokenSymbol}} for fighter
+                                improvements</div>
+                            <div
+                                *ngIf="!allowedKennel.allowed && walletInfo?.isConnected === true && !fighter?.waiting"
+                                class="btn btn-danger break-button">You need to hold at least {{allowedKennel.needed}} KENNEL for
+                                fights</div>
+                            <div
+                                *ngIf="allowedKennel.allowed &&  walletInfo?.isConnected === true && !fighter?.waiting && !showCanFight"
+                                class="btn btn-danger break-button">You can fight only once per 24h</div>
                             <a (click)="fight(fighter)"
-                                *ngIf="allowedKennel && fighter.imageUploaded && !fighter?.waiting"
+                                *ngIf="allowedKennel.allowed && fighter.imageUploaded && !fighter?.waiting && showCanFight"
                                 class="btn btn-primary btn-round"><span class="custom-badge"
-                                    matBadgePosition="below after"
-                                    [matBadge]="prices.fightPrice + ' ' +prices.fightSymbol"
+                                    matBadgePosition="below after" [matBadge]="prices.fightPrice + ' BNB'"
                                     matBadgeOverlap="false">FIGHT</span></a>
-                            <a *ngIf="!allowedKennel &&  walletInfo?.isConnected === true && !fighter?.waiting"
-                                href="javascript: void(0);" class="btn btn-danger btn-round"
-                                title="Approve KENNEL for fights" (click)="approveKennel()">APPROVE KENNEL</a>
 
-                            <a (click)="train(fighter)" *ngIf="fighter.imageUploaded && !fighter?.waiting"
+                            <a (click)="train(fighter)"
+                                *ngIf="fighter.imageUploaded && !fighter?.waiting && allowed.allowed"
                                 class="btn btn-success btn-round"><span class="custom-badge"
-                                    matBadgePosition="below after"
-                                    [matBadge]="prices.trainingPrice + ' '  +prices.tokenSymbol"
+                                    matBadgePosition="below after" [matBadge]="prices.trainingPrice + ' BNB'"
                                     matBadgeOverlap="false">TRAIN</span></a>
-                            <a (click)="refillArmor(fighter)" *ngIf="fighter.imageUploaded && !fighter?.waiting"
+                            <a (click)="refillArmor(fighter)"
+                                *ngIf="fighter.imageUploaded && !fighter?.waiting && allowed.allowed"
                                 class="btn btn-rose btn-round"><span class="custom-badge" matBadgePosition="below after"
-                                    [matBadge]="prices.armorPrice + ' ' + prices.tokenSymbol"
-                                    matBadgeOverlap="false">REFILL ARMOR</span></a>
-                            <a (click)="revealFighter(fighter)" *ngIf="!fighter.imageUploaded && !fighter?.waiting"
+                                    [matBadge]="prices.armorPrice + ' BNB'" matBadgeOverlap="false">REFILL
+                                    ARMOR</span></a>
+                            <a (click)="revealFighter(fighter)"
+                                *ngIf="!fighter.imageUploaded && !fighter?.waiting && allowed.allowed"
                                 class="btn btn-warning btn-round">REVEAL</a>
-                            <a (click)="nameFighterPrep()" *ngIf="!fighter?.waiting"
+                            <a (click)="nameFighterPrep()" *ngIf="!fighter?.waiting && allowed.allowed"
                                 class="btn btn-info btn-round"><span class="custom-badge" matBadgePosition="below after"
-                                    [matBadge]="prices.namePrice + ' ' + prices.tokenSymbol" matBadgeOverlap="false">CHANGE
+                                    [matBadge]="prices.namePrice + ' BNB'" matBadgeOverlap="false">CHANGE
                                     NAME</span></a>
                             <a (click)="levelUp(fighter)"
-                                *ngIf="fighter.imageUploaded && !fighter?.waiting && fighter.upgradable"
+                                *ngIf="fighter.imageUploaded && !fighter?.waiting && fighter.upgradable && allowed.allowed"
                                 class="btn btn-warning btn-round"><span class="custom-badge"
-                                    matBadgePosition="below after"
-                                    [matBadge]="prices.lvlUpPrice + ' ' + prices.tokenSymbol"
+                                    matBadgePosition="below after" [matBadge]="prices.lvlUpPrice + ' BNB'"
                                     matBadgeOverlap="false">LEVEL UP</span></a>
                             <a href="{{tranurl}}{{fighter.tx}}"
                                 *ngIf="fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase() && fighter?.waiting"
@@ -112,6 +111,7 @@
             </mat-drawer-container>
             <app-fancy-dialog [(visible)]="attackResults?.result && showDialog">
                 <h1 class="center">You {{attackResults?.result}}!!</h1>
+                <div class="winnings">Winner gets {{attackResults?.winnings}} BNB</div>
                 <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
                     <div class="article fancy" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
                         <div class="title">Attacker</div>

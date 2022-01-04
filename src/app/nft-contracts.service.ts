@@ -105,19 +105,17 @@ export class NftContractsService {
         return "0";
     }
 
-    public async getFightInfo(): Promise<{ fightSymbol: string; fightPrice: number }> {
+    public async getFightInfo(): Promise<{ fightSymbol: string; fightPrice: number; origFightPrice: number }> {
         this.initWeb3();
         const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
         let fightPrice = await contractKombat.methods.fightPrice().call();
-        const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
-        const decimals = await contractToken.methods.decimals().call();
-        const fightSymbol = await contractToken.methods.symbol().call();
-        const fightPr = fightPrice / (10 ** decimals);
-        return { fightSymbol, fightPrice: fightPr };
+        console.log("fightPrice", fightPrice);
+        const fightPr = fightPrice / (10 ** 18);
+        return { fightSymbol: "BNB", fightPrice: fightPr, origFightPrice: fightPrice };
     }
 
-    public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; fightSymbol: string; fightPrice: number; recruitPrice: number; tokenSymbol: string }> {
-        let teamsInfo = { address: "", name: "", symbol: "", fightSymbol: "", fightPrice: 0, recruitPrice: 0, tokenSymbol: "" };
+    public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; fightSymbol: string; fightPrice: number; origRecruit: any; recruitPrice: number; tokenSymbol: string }> {
+        let teamsInfo = { address: "", name: "", symbol: "", fightSymbol: "", fightPrice: 0, recruitPrice: 0, origRecruit: 0, tokenSymbol: "" };
         try {
             if (this.teamsData[address]) {
                 console.log("this.teamsData[address]", this.teamsData[address]);
@@ -142,7 +140,7 @@ export class NftContractsService {
                 tokenSymbol = await contractToken.methods.symbol().call();
                 price = recruitPrice / (10 ** decimals);
             }
-            teamsInfo = { address, name, symbol, fightPrice: fightInfo.fightPrice, fightSymbol: fightInfo.fightSymbol, recruitPrice: price, tokenSymbol };
+            teamsInfo = { address, name, symbol, fightPrice: fightInfo.fightPrice, fightSymbol: fightInfo.fightSymbol, origRecruit: recruitPrice, recruitPrice: price, tokenSymbol };
             this.teamsData[address] = teamsInfo;
             return teamsInfo;
         } catch (ex) {
@@ -153,8 +151,26 @@ export class NftContractsService {
         return teamsInfo;
     }
 
-    public async getPrices(address): Promise<{ address: string; armorPrice: number; lvlUpPrice: number; trainingPrice: number; tokenSymbol: string; fightSymbol: string; fightPrice: number; namePrice: number }> {
-        let teamsInfo = { address: "", armorPrice: 0, trainingPrice: 0, lvlUpPrice: 0, tokenSymbol: "", fightSymbol: "", fightPrice: 0, namePrice: 0 };
+    public async getPrices(address): Promise<{
+        address: string;
+        armorPrice: number;
+        lvlUpPrice: number;
+        trainingPrice: number;
+        tokenSymbol: string;
+        fightSymbol: string;
+        fightPrice: number;
+        namePrice: number;
+        origArmorPrice: number;
+        origLvlUpPrice: number;
+        origTrainingPrice: number;
+        origFightPrice: number;
+        origNamePrice: number;
+
+    }> {
+        let teamsInfo = {
+            address: "", armorPrice: 0, trainingPrice: 0, lvlUpPrice: 0, tokenSymbol: "", fightSymbol: "", fightPrice: 0, namePrice: 0,
+            origArmorPrice: 0, origLvlUpPrice: 0, origTrainingPrice: 0, origFightPrice: 0, origNamePrice: 0
+        };
         try {
             this.initWeb3();
             const fightInfo = await this.getFightInfo();
@@ -174,14 +190,15 @@ export class NftContractsService {
             const tokenAddress = await contractTrainer.methods.tokenAddress().call();
             if (tokenAddress) {
                 const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
-                const decimals = await contractToken.methods.decimals().call();
                 tokenSymbol = await contractToken.methods.symbol().call();
-                price = armorPrice / (10 ** decimals);
-                trainPrice = trainingPrice / (10 ** decimals);
-                lvlUpPrice = levelUpPrice / (10 ** decimals);
-                namePrice = setNamePrice / (10 ** decimals);
+                price = armorPrice / (10 ** 18);
+                trainPrice = trainingPrice / (10 ** 18);
+                lvlUpPrice = levelUpPrice / (10 ** 18);
+                namePrice = setNamePrice / (10 ** 18);
             }
-            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol, ...fightInfo };
+            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol, 
+                origArmorPrice: armorPrice, origLvlUpPrice: levelUpPrice, origTrainingPrice: trainingPrice, origNamePrice: setNamePrice
+                ,...fightInfo };
             return teamsInfo;
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Fighters contract, try again later", "Contract connect");
@@ -248,8 +265,9 @@ export class NftContractsService {
                             attackResult = "Win";
                         }
                         const date = new Date(Number(returnValues.timestamp) * 1000);
+                        const winnings = (returnValues.winnings / (10 ** 18));
                         const timeTxt = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                        results.push({ ...opponent, type: "Defend", result: attackResult, blockNumber: evnt.blockNumber, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
+                        results.push({ ...opponent, type: "Defend", result: attackResult, blockNumber: evnt.blockNumber, winnings, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
 
                     } else if (returnValues && (returnValues.attackerContract === address && returnValues.attacker === tokenId)) {
                         opponent = await this.getFighterSimplyInfo(returnValues.defenderContract, returnValues.defender);
@@ -259,8 +277,9 @@ export class NftContractsService {
                             attackResult = "Lost";
                         }
                         const date = new Date(Number(returnValues.timestamp) * 1000);
+                        const winnings = (returnValues.winnings / (10 ** 18));
                         const timeTxt = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                        results.push({ ...opponent, type: "Attack", result: attackResult, blockNumber: evnt.blockNumber, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
+                        results.push({ ...opponent, type: "Attack", result: attackResult, blockNumber: evnt.blockNumber, winnings, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
                     }
                 }
             }

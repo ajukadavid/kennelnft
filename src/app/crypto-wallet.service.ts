@@ -133,12 +133,12 @@ export class CryptoWalletService {
         }
     }
 
-    public async fight(tokenId, address): Promise<any> {
+    public async fight(tokenId, address, price): Promise<any> {
         const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractKombat.methods.fight(address, tokenId).send({ from: this.walletInfo.wallet })
+                contractKombat.methods.fight(address, tokenId).send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -157,37 +157,14 @@ export class CryptoWalletService {
         }
     }
 
-    public async gain(tokenId, address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
-        try {
-            // call transfer function
-            return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractFighter.methods.gainExp(tokenId, 10000000000).send({ from: this.walletInfo.wallet })
-                    .once("transactionHash", function (hash) {
-                        resolve({ result: true, data: hash });
-                    })
-                    .then(function (receipt) {
-                        toaster.pop("success", "Your transaction is confirmed", "Transaction info");
-                        trans.next({ status: "Gain completed", data: tokenId });
-                    })
-                    .catch(() => {
-                        trans.next({ status: "NFT cancelled", data: tokenId });
-                    });;
-            }))(this.notifierService, this.transactionStatus);
-        }
-        catch (err) {
-            console.log("err", err);
-        }
-    }
-
-    public async train(tokenId, address): Promise<any> {
+    public async train(tokenId, address, price): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.train(tokenId).send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.train(tokenId).send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -205,14 +182,14 @@ export class CryptoWalletService {
         }
     }
 
-    public async levelUp(tokenId, address): Promise<any> {
+    public async levelUp(tokenId, address, price): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.levelUp(tokenId).send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.levelUp(tokenId).send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -252,14 +229,14 @@ export class CryptoWalletService {
     //     }
     // }
 
-    public async refillArmor(tokenId, address): Promise<any> {
+    public async refillArmor(tokenId, address, price): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.refillArmor(tokenId).send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.refillArmor(tokenId).send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -278,14 +255,14 @@ export class CryptoWalletService {
     }
 
 
-    public async createFighter(address): Promise<any> {
+    public async createFighter(address, price): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.recruit().send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.recruit().send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -329,14 +306,14 @@ export class CryptoWalletService {
             return Promise.resolve({ result: false });
         }
     }
-    
-    public async nameFighter(tokenId, address, fighterName): Promise<any> {
+
+    public async nameFighter(tokenId, address, fighterName, price): Promise<any> {
         const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
         try {
             return ((toaster, trans) => new Promise((resolve, reject) => {
-                contractTrainer.methods.setTokenName(tokenId, fighterName).send({ from: this.walletInfo.wallet })
+                contractTrainer.methods.setTokenName(tokenId, fighterName).send({ from: this.walletInfo.wallet, value: price })
                     .once("transactionHash", function (hash) {
                         resolve({ result: true, data: hash });
                     })
@@ -355,42 +332,63 @@ export class CryptoWalletService {
         }
     }
 
+    public async showCanFight(address, tokenId): Promise<boolean> {
+        try {
+            if (this.walletInfo.wallet) {
+                const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+                let canFight = await contractKombat.methods.showCanFight(address, tokenId).call();
+                return canFight;
+            }
+            return false;
+        }
+        catch (err) {
+            console.log("err", err);
+            return false;
+        }
+    }
 
-    public async checkAllowed(address): Promise<number> {
+    public async checkAllowed(address): Promise<{ allowed: boolean, needed: string }> {
         try {
             if (this.walletInfo.wallet) {
                 const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
                 const trainerAddress = await contractFighter.methods.trainerContract().call();
                 const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
                 const tokenAddress = await contractTrainer.methods.tokenAddress().call();
+                const tokenHoldAmount = await contractTrainer.methods.tokenHoldAmount().call();
 
                 if (tokenAddress) {
                     const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
-                    const allow = await contractToken.methods.allowance(this.walletInfo.wallet, trainerAddress).call();
-                    return allow;
+                    const holding = await contractToken.methods.balanceOf(this.walletInfo.wallet).call();
+                    const decimals = await contractToken.methods.decimals().call();
+                    console.log("holding, tokenAddress", holding, tokenHoldAmount);
+                    return { allowed: tokenHoldAmount <= holding, needed: (tokenHoldAmount / (10 ** decimals)).toFixed(3) };
                 }
             }
-            return -1;
+            return { allowed: false, needed: "Unkonwn" };
         }
         catch (err) {
             console.log("err", err);
-            return -1;
+            return { allowed: false, needed: "Unkonwn" };
         }
     }
 
-
-    public async checkAllowedKennel(): Promise<number> {
+    public async checkAllowedKennel(): Promise<{ allowed: boolean, needed: string }> {
         try {
             if (this.walletInfo.wallet) {
+                const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+                const tokenHoldAmount = await contractKombat.methods.tokenHoldAmount().call();
+
                 const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
-                const allow = await contractToken.methods.allowance(this.walletInfo.wallet, KOMBATADDRESS).call();
-                return allow;
+                const decimals = await contractToken.methods.decimals().call();
+                const holding = await contractToken.methods.balanceOf(this.walletInfo.wallet).call();
+                console.log("holding kennel,", holding, tokenHoldAmount);
+                return { allowed: tokenHoldAmount <= holding, needed: (tokenHoldAmount / (10 ** decimals)).toFixed(3) };
             }
-            return -1;
+            return { allowed: false, needed: "Unkonwn" };
         }
         catch (err) {
             console.log("err", err);
-            return -1;
+            return { allowed: false, needed: "Unkonwn" };
         }
     }
 
