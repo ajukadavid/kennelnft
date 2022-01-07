@@ -26,16 +26,20 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     public deffender;
     public showCanFight = false;
     public waiting = false;
-    public allowed = { allowed: false, needed :"0"};
-    public allowedKennel = { allowed: false, needed :"0"};
+    public allowed = { allowed: false, needed: "0" };
+    public allowedKennel = { allowed: false, needed: "0" };
     public showName = false;
     public showDialog = false;
     public attackResults;
     public fighterName = "";
-    public prices: { address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string;
-        origArmorPrice: number; origLvlUpPrice: number; origTrainingPrice: number; origFightPrice: number; origNamePrice: number } =
-        { address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined,
-            origArmorPrice: undefined, origLvlUpPrice: undefined, origTrainingPrice: undefined, origFightPrice: undefined, origNamePrice: undefined };
+    public prices: {
+        address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string;
+        origArmorPrice: number; origLvlUpPrice: number; origTrainingPrice: number; origFightPrice: number; origNamePrice: number
+    } =
+        {
+            address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined,
+            origArmorPrice: undefined, origLvlUpPrice: undefined, origTrainingPrice: undefined, origFightPrice: undefined, origNamePrice: undefined
+        };
     public tx = "";
     private subscription: Subscription = new Subscription();
     public get walletInfo(): any {
@@ -113,15 +117,15 @@ export class DetailPageComponent implements OnInit, OnDestroy {
 
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
-            if (this.walletInfo.isConnected === true) {
+            if (this.walletInfo?.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
                 this.allowed = allowed;
                 const allowedKennel = await this.cryptoWalletService.checkAllowedKennel();
                 this.allowedKennel = allowedKennel;
                 this.showCanFight = await this.cryptoWalletService.showCanFight(this.address, this.id);
             } else {
-                this.allowed = {allowed: false, needed : "0"};
-                this.allowedKennel = {allowed: false, needed : "0"};
+                this.allowed = { allowed: false, needed: "0" };
+                this.allowedKennel = { allowed: false, needed: "0" };
                 this.showCanFight = false;
             }
             this.cd.detectChanges();
@@ -131,12 +135,12 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     private async checkResults(receipt) {
         let attackResult;
         if (receipt.events && receipt.events.attackResult) {
-            attackResult = {..._.cloneDeep(receipt.events.attackResult.returnValues), result: receipt.events.attackResult.returnValues.AttackSuccess === true ? "Win" : "Lost"};
+            attackResult = { ..._.cloneDeep(receipt.events.attackResult.returnValues), result: receipt.events.attackResult.returnValues.AttackSuccess === true ? "Win" : "Lost" };
         }
 
         if (attackResult) {
             const defender = await this.nftContractsService.getFighterBasicInfo(attackResult.defenderContract, attackResult.defender);
-            this.attackResults = { attacker: this.fighter, defender, result: attackResult.result, winnings: attackResult.winnings};
+            this.attackResults = { attacker: this.fighter, defender, result: attackResult.result, prize: (attackResult.prize / (10 ** 18)).toFixed(7) };
             this.showDialog = true;
             this.cd.detectChanges();
         }
@@ -152,7 +156,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     fighter.waiting = false;
                     fighter.tx = undefined;
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Reveal fighter");
-                }                
+                }
             } else if (data.status === "Name completed") {
                 const fighter = this.fighter.token === data.data ? this.fighter : undefined;
 
@@ -161,7 +165,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     fighter.tx = undefined;
                     this.fighter = await this.nftContractsService.getFighterBasicInfo(this.address, this.id);
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Name fighter");
-                }                
+                }
             } else if (data.status === "Fight completed") {
                 const fighter = this.fighter.token === data.data.tokenId ? this.fighter : undefined;
 
@@ -182,7 +186,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                     this.notifyService.pop("success", "Your fighter was succesfully updated", "Training completed");
                 }
             } else if (data.status === "NFT cancelled") {
-                const fighter = (this.fighter.token === ( data?.data?.tokenId ? data.data?.tokenId : data.data)) ? this.fighter : undefined;
+                const fighter = (this.fighter.token === (data?.data?.tokenId ? data.data?.tokenId : data.data)) ? this.fighter : undefined;
                 if (fighter) {
                     fighter.waiting = false;
                 }
@@ -223,7 +227,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
         fighter.waiting = true;
         this.cd.detectChanges();
         await this.nftActionsService.revealFighter(fighter, this.address);
-        this.cd.detectChanges();    
+        this.cd.detectChanges();
     }
 
     public async nameFighter(fighter) {
@@ -235,7 +239,7 @@ export class DetailPageComponent implements OnInit, OnDestroy {
                 fighter.tx = result.data;
                 fighter.waiting = true;
                 this.cd.detectChanges();
-            }   
+            }
             this.fighterName = "";
         } else {
             this.notifyService.pop("error", "Missing fighter name", "Name fighter problem");

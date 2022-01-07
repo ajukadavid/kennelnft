@@ -1,7 +1,7 @@
 .article {
     margin: 20px;
     padding: 20px;
-    height: 250px;
+    height: 300px;
     width: 100%;
     opacity: 90%;
     border: solid 1px #555;
@@ -21,7 +21,7 @@
     }
 
     .img {
-        height: calc(100% - 90px);
+        height: calc(100% - 120px);
 
         img {
             max-width: 100%;

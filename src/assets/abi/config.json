@@ -1,7 +1,7 @@
 {
     "network": "https://data-seed-prebsc-1-s2.binance.org:8545/",
     "networkId": "97",
-    "address": "0xFFae108a08D4de5570e2EC4A83f685731582e074",
+    "address": "0x0E5E1f43eB4B94a8827af2C48976817f60a43eC4",
     "kenneladdress": "0x1dd1f047d27ab6fea6ca53ca97a49a4c779da3b0",
     "transactionsurl": "https://testnet.bscscan.com/tx/",
     "beurl": "http://localhost:12477/api"

@@ -134,7 +134,7 @@ export class CryptoWalletService {
     }
 
     public async fight(tokenId, address, price): Promise<any> {
-        const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -158,9 +158,9 @@ export class CryptoWalletService {
     }
 
     public async train(tokenId, address, price): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -183,9 +183,9 @@ export class CryptoWalletService {
     }
 
     public async levelUp(tokenId, address, price): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -208,9 +208,9 @@ export class CryptoWalletService {
     }
 
     // public async challenge(tokenId, address, opponnentAddress, opponnentTokenId): Promise<any> {
-    //     const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+    //     const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
     //     const trainerAddress = await contractFighter.methods.trainerContract().call();
-    //     const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+    //     const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
     //     try {
     //         // call transfer function
     //         return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -230,9 +230,9 @@ export class CryptoWalletService {
     // }
 
     public async refillArmor(tokenId, address, price): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -256,9 +256,9 @@ export class CryptoWalletService {
 
 
     public async createFighter(address, price): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             // call transfer function
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -281,10 +281,10 @@ export class CryptoWalletService {
     }
 
     public async revealFighter(tokenId, address, hash): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
         console.log("trainerAddress", trainerAddress);
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         console.log("contractTrainer", contractTrainer);
         try {
             return ((toaster, trans) => new Promise((resolve, reject) => {
@@ -308,9 +308,9 @@ export class CryptoWalletService {
     }
 
     public async nameFighter(tokenId, address, fighterName, price): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         try {
             return ((toaster, trans) => new Promise((resolve, reject) => {
                 contractTrainer.methods.setTokenName(tokenId, fighterName).send({ from: this.walletInfo.wallet, value: price })
@@ -335,8 +335,9 @@ export class CryptoWalletService {
     public async showCanFight(address, tokenId): Promise<boolean> {
         try {
             if (this.walletInfo.wallet) {
-                const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+                const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
                 let canFight = await contractKombat.methods.showCanFight(address, tokenId).call();
+                console.log("canFight", canFight);
                 return canFight;
             }
             return false;
@@ -350,9 +351,9 @@ export class CryptoWalletService {
     public async checkAllowed(address): Promise<{ allowed: boolean, needed: string }> {
         try {
             if (this.walletInfo.wallet) {
-                const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+                const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
                 const trainerAddress = await contractFighter.methods.trainerContract().call();
-                const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+                const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
                 const tokenAddress = await contractTrainer.methods.tokenAddress().call();
                 const tokenHoldAmount = await contractTrainer.methods.tokenHoldAmount().call();
 
@@ -375,7 +376,7 @@ export class CryptoWalletService {
     public async checkAllowedKennel(): Promise<{ allowed: boolean, needed: string }> {
         try {
             if (this.walletInfo.wallet) {
-                const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+                const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
                 const tokenHoldAmount = await contractKombat.methods.tokenHoldAmount().call();
 
                 const contractToken = new this.web3.eth.Contract(token.abi, KENNELADDRESS);
@@ -420,9 +421,9 @@ export class CryptoWalletService {
     }
 
     public async approve(address): Promise<any> {
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const trainerAddress = await contractFighter.methods.trainerContract().call();
-        const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+        const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
         const tokenAddress = await contractTrainer.methods.tokenAddress().call();
         if (tokenAddress) {
             const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
@@ -451,11 +452,11 @@ export class CryptoWalletService {
     }
 
     public async getUserFightersInfo(): Promise<any> {
-        const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
         let teams = await contractKombat.methods.allTeams().call();
         const promises = [];
         for (const team of teams) {
-            const contractFighter = new this.web3.eth.Contract(fighter.abi, team);
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
             let numNfts = await contractFighter.methods.balanceOf(this.walletInfo.wallet).call();
             for (let i = 0; i < numNfts; i++) {
                 const nft = await contractFighter.methods.tokenOfOwnerByIndex(this.walletInfo.wallet, i).call();

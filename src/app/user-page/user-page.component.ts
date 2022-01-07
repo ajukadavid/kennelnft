@@ -57,7 +57,7 @@ export class UserPageComponent implements OnInit {
 
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
-            if (this.walletInfo.isConnected === true) {
+            if (this.walletInfo?.isConnected === true) {
                 this.fighters = [];
                 await this.cryptoWalletService.getUserFightersInfo();                
             }

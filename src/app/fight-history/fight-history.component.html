@@ -36,7 +36,7 @@
                             [ngClass]="{green: fighter.result==='Win', red: fighter.result==='Lost'}"
                             *ngFor="let fighter of opponents | orderBy: 'blockNumber' : true">
                             <div class="result">{{fighter.type}} - {{fighter.result}}</div>
-                            <div class="infofight"><div class="time">{{fighter.timeTxt}}</div><div class="winnings">Winner gets {{fighter.winnings}} BNB</div></div>
+                            <div class="infofight"><div class="time">{{fighter.timeTxt}}</div><div class="winnings">Winner gets {{fighter.prize}} BNB</div></div>
                             <div class="img">
                                 <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"><img
                                         src="{{fighter.metadata.image}}" onerror="this.src='/assets/img/siluette.png';">

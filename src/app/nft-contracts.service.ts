@@ -35,7 +35,7 @@ export class NftContractsService {
 
     private async getFighterSimplyInfo(address, tokenId): Promise<any> {
         // get fighter
-        const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+        const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
         const metadata = await contractFighter.methods.tokenURI(tokenId).call();
         const base64 = metadata.split(",")[1];
         const json = JSON.parse(Buffer.from(base64, 'base64').toString('ascii').replace("\"attributes\":\"", "\"attributes\":").replace("]\", \"image", "], \"image"));
@@ -48,12 +48,12 @@ export class NftContractsService {
             const teamsInfo = [];
 
             // get teams
-            const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+            const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
 
             let teams = await contractKombat.methods.allTeams().call();
             console.log(teams);
             for (const team of teams) {
-                const contractFighter = new this.web3.eth.Contract(fighter.abi, team);
+                const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
                 const name = await contractFighter.methods.name().call();
                 const symbol = await contractFighter.methods.symbol().call();
                 teamsInfo.push({ address: team, squad: name, symbol });
@@ -74,11 +74,11 @@ export class NftContractsService {
             this.initWeb3();
 
             // get teams
-            const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+            const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
 
             let winnings = await contractKombat.methods.totalPrize().call();
             winnings = winnings / (10 ** 18);
-            return winnings.toFixed(5);
+            return winnings.toFixed(7);
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Kombat contract, try again later", "Contract connect");
             // not connected
@@ -92,7 +92,7 @@ export class NftContractsService {
             this.initWeb3();
 
             // get teams
-            const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+            const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
 
             let possible = await contractKombat.methods.maxPossiblePrize().call();
             possible = possible / (10 ** 18);
@@ -107,7 +107,7 @@ export class NftContractsService {
 
     public async getFightInfo(): Promise<{ fightSymbol: string; fightPrice: number; origFightPrice: number }> {
         this.initWeb3();
-        const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+        const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
         let fightPrice = await contractKombat.methods.fightPrice().call();
         console.log("fightPrice", fightPrice);
         const fightPr = fightPrice / (10 ** 18);
@@ -124,10 +124,10 @@ export class NftContractsService {
             this.initWeb3();
 
             const fightInfo = await this.getFightInfo();
-            const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
             console.log("trainerAddress", trainerAddress);
-            const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
             const name = await contractFighter.methods.name().call();
             const symbol = await contractFighter.methods.symbol().call();
             const recruitPrice = await contractTrainer.methods.recruitPrice().call();
@@ -174,9 +174,9 @@ export class NftContractsService {
         try {
             this.initWeb3();
             const fightInfo = await this.getFightInfo();
-            const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
-            const contractTrainer = new this.web3.eth.Contract(trainer.abi, trainerAddress);
+            const contractTrainer = new this.web3.eth.Contract(trainer.output.abi, trainerAddress);
             const armorPrice = await contractTrainer.methods.armorPrice().call();
             const trainingPrice = await contractTrainer.methods.trainingPrice().call();
             const levelUpPrice = await contractTrainer.methods.levelUpPrice().call();
@@ -213,7 +213,7 @@ export class NftContractsService {
         try {
             this.initWeb3();
             // get teams
-            const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             let start = startFighter;
             if (!startFighter) {
                 let fighters = await contractFighter.methods.totalSupply().call();
@@ -245,7 +245,7 @@ export class NftContractsService {
         try {
             const results = [];
             this.initWeb3();
-            const contractKombat = new this.web3.eth.Contract(kombat.abi, KOMBATADDRESS);
+            const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
             let events = await contractKombat.getPastEvents('attackResult', {
                 fromBlock: lastBlock,
                 toBlock: lastBlock + 4900
@@ -265,9 +265,9 @@ export class NftContractsService {
                             attackResult = "Win";
                         }
                         const date = new Date(Number(returnValues.timestamp) * 1000);
-                        const winnings = (returnValues.winnings / (10 ** 18));
+                        const prize = (returnValues.prize / (10 ** 18)).toFixed(7);
                         const timeTxt = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                        results.push({ ...opponent, type: "Defend", result: attackResult, blockNumber: evnt.blockNumber, winnings, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
+                        results.push({ ...opponent, type: "Defend", result: attackResult, blockNumber: evnt.blockNumber, prize, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
 
                     } else if (returnValues && (returnValues.attackerContract === address && returnValues.attacker === tokenId)) {
                         opponent = await this.getFighterSimplyInfo(returnValues.defenderContract, returnValues.defender);
@@ -277,9 +277,9 @@ export class NftContractsService {
                             attackResult = "Lost";
                         }
                         const date = new Date(Number(returnValues.timestamp) * 1000);
-                        const winnings = (returnValues.winnings / (10 ** 18));
+                        const prize = (returnValues.prize / (10 ** 18)).toFixed(7);
                         const timeTxt = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                        results.push({ ...opponent, type: "Attack", result: attackResult, blockNumber: evnt.blockNumber, winnings, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
+                        results.push({ ...opponent, type: "Attack", result: attackResult, blockNumber: evnt.blockNumber, prize, timestamp: returnValues.timestamp, timeTxt, tx: evnt.transactionHash });
                     }
                 }
             }
@@ -298,7 +298,7 @@ export class NftContractsService {
             let teamContent;
 
             // get fighter
-            const contractFighter = new this.web3.eth.Contract(fighter.abi, address);
+            const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const metadata = await contractFighter.methods.tokenURI(tokenId).call();
             const imageUploaded = await contractFighter.methods.tokenToImageUpdated(tokenId).call();
             const upgradable = await contractFighter.methods.upgradable(tokenId).call();
@@ -310,7 +310,7 @@ export class NftContractsService {
             if (json?.attributes) {
                 json.attributes = json.attributes.map((attr) => {
                     if (attr.trait_type === "Winnings") {
-                        attr.value = (Number(attr.value) / (10 ** 18)).toFixed(5) + " Bnb";
+                        attr.value = (Number(attr.value) / (10 ** 18)).toFixed(7) + " Bnb";
                     }
                     return attr;
                 });

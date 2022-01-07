@@ -2166,6 +2166,7 @@ fieldset[disabled][disabled] .btn-group-raised .btn,
     overflow: hidden;
     z-index: 1;
     background-color: unset;
+    min-height: calc(100vh - 140px);
 }
 
 .mat-drawer-content {
