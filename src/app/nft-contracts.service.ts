@@ -27,11 +27,27 @@ export class NftContractsService {
         private notifierService: NotifyService
     ) { }
 
-    private initWeb3(): any {
+    private async initWeb3() {
         if (!this.web3) {
-            this.web3 = new Web3(WEB3URL);
+            this.web3 = new Web3(WEB3URL[0]);
         }
     }
+
+    // private async initWeb3() {
+    //     if (!this.web3) {
+    //         for (let x = 0; x < WEB3URL.length; x++) {
+    //             try {
+    //                 const web3 = new Web3(WEB3URL[x]);
+    //                 const contractKombat = new (web3 as any).eth.Contract(kombat.output.abi, KOMBATADDRESS);
+    //                 let teams = await contractKombat.methods.kennelAddress().call();                    
+    //                 this.web3 = web3;
+    //                 break;
+    //             } catch (ex) {
+    //                 console.log(ex);
+    //             }
+    //         }
+    //     }
+    // }
 
     private async getFighterSimplyInfo(address, tokenId): Promise<any> {
         // get fighter
@@ -44,7 +60,7 @@ export class NftContractsService {
 
     public async getKombatInfo(): Promise<{ address: string; squad: string; symbol: string }[]> {
         try {
-            this.initWeb3();
+            await this.initWeb3();
             const teamsInfo = [];
 
             // get teams
@@ -71,7 +87,7 @@ export class NftContractsService {
 
     public async getWinnings(): Promise<string> {
         try {
-            this.initWeb3();
+            await this.initWeb3();
 
             // get teams
             const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
@@ -89,7 +105,7 @@ export class NftContractsService {
 
     public async getPossible(): Promise<string> {
         try {
-            this.initWeb3();
+            await this.initWeb3();
 
             // get teams
             const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
@@ -106,7 +122,7 @@ export class NftContractsService {
     }
 
     public async getFightInfo(): Promise<{ fightSymbol: string; fightPrice: number; origFightPrice: number }> {
-        this.initWeb3();
+        await this.initWeb3();
         const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
         let fightPrice = await contractKombat.methods.fightPrice().call();
         console.log("fightPrice", fightPrice);
@@ -121,7 +137,7 @@ export class NftContractsService {
                 console.log("this.teamsData[address]", this.teamsData[address]);
                 return this.teamsData[address];
             }
-            this.initWeb3();
+            await this.initWeb3();
 
             const fightInfo = await this.getFightInfo();
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
@@ -172,7 +188,7 @@ export class NftContractsService {
             origArmorPrice: 0, origLvlUpPrice: 0, origTrainingPrice: 0, origFightPrice: 0, origNamePrice: 0
         };
         try {
-            this.initWeb3();
+            await this.initWeb3();
             const fightInfo = await this.getFightInfo();
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             const trainerAddress = await contractFighter.methods.trainerContract().call();
@@ -196,9 +212,11 @@ export class NftContractsService {
                 lvlUpPrice = levelUpPrice / (10 ** 18);
                 namePrice = setNamePrice / (10 ** 18);
             }
-            teamsInfo = { address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol, 
+            teamsInfo = {
+                address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol,
                 origArmorPrice: armorPrice, origLvlUpPrice: levelUpPrice, origTrainingPrice: trainingPrice, origNamePrice: setNamePrice
-                ,...fightInfo };
+                , ...fightInfo
+            };
             return teamsInfo;
         } catch (ex) {
             this.notifierService.pop("error", "We can't check Fighters contract, try again later", "Contract connect");
@@ -211,7 +229,7 @@ export class NftContractsService {
 
     public async getFightersInfo(address, numFighters = 10, lastFighter?, startFighter?): Promise<any> {
         try {
-            this.initWeb3();
+            await this.initWeb3();
             // get teams
             const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
             let start = startFighter;
@@ -237,14 +255,14 @@ export class NftContractsService {
     }
 
     public async getLastBlock(): Promise<any> {
-        this.initWeb3();
+        await this.initWeb3();
         return await this.web3.eth.getBlockNumber();
     }
 
     public async getOpponents(address, tokenId, lastBlock): Promise<any[]> {
         try {
             const results = [];
-            this.initWeb3();
+            await this.initWeb3();
             const contractKombat = new this.web3.eth.Contract(kombat.output.abi, KOMBATADDRESS);
             let events = await contractKombat.getPastEvents('attackResult', {
                 fromBlock: lastBlock,
@@ -294,7 +312,7 @@ export class NftContractsService {
 
     public async getFighterBasicInfo(address, tokenId): Promise<any> {
         try {
-            this.initWeb3();
+            await this.initWeb3();
             let teamContent;
 
             // get fighter
