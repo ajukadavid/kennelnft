@@ -24,7 +24,7 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     public fighterName = "";
     public showDialog = false;
     public waiting = false;
-    public allowed = {allowed: false, needed: "0"};
+    public allowed = {allowed: false, needed: "0", tokenSymbol: ""};
     public tx = "";
     public txKennel = "";
     private lastFighter = 0;
@@ -82,11 +82,11 @@ export class SquadPageComponent implements OnInit, OnDestroy {
     private subscribeToWallet() {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe(async (data) => {
             console.log("subscribeToWallet", data);
-            if (this.walletInfo?.isConnected === true) {
+            if (data?.isConnected === true) {
                 const allowed = await this.cryptoWalletService.checkAllowed(this.address);
                 this.allowed = allowed;
             } else {
-                this.allowed = {allowed: false, needed: "0"};
+                this.allowed = {allowed: false, needed: "0", tokenSymbol: ""};
             }
             this.cd.detectChanges();
         }));

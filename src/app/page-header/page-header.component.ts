@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NftContractsService } from '../nft-contracts.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { NftContractsService } from '../nft-contracts.service';
 })
 export class PageHeaderComponent implements OnInit {
 
+    @Input() info = {};
     public winnings = "0";
     public possible = "0";
 

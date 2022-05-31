@@ -6,5 +6,6 @@
     "address": "0xEBB9f167e749584A84bcB5A8F4aa3aAaE5f4cBb3",
     "kenneladdress": "0x1dd1f047d27ab6fea6ca53ca97a49a4c779da3b0",
     "transactionsurl": "https://testnet.bscscan.com/tx/",
-    "beurl": "http://localhost:12477/api"
+    "beurl": "https://image.thetokenkennel.com/api",
+    "swapurl": "https://pancake.kiemtienonline360.com/#/swap?outputCurrency="
 }

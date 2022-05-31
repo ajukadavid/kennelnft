@@ -5,6 +5,10 @@
 
 @import "~swiper/css/bundle";
 
+@import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+
 html {
     padding: 0;
     margin: 0;
@@ -2124,7 +2128,6 @@ fieldset[disabled][disabled] .btn-group-raised .btn,
 }
 
 .wrapper {
-    padding-top: 60px;
     position: relative;
 }
 

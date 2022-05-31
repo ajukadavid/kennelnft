@@ -1,5 +1,5 @@
 <div class="mainpage">
-    <app-page-header></app-page-header>
+    <app-page-header [info]="info"></app-page-header>
     <div class="wrapper">
         <div class="content" *ngIf="info?.address && info.address !==''">
             <mat-drawer-container [hasBackdrop]="false">
@@ -28,8 +28,11 @@
                         <mat-icon>live_help</mat-icon>
                     </button>                    
                     <div class="header">
-                        {{info.name}} ({{info.symbol}})
-                        <div class="recruit custom-badge" *ngIf="allowed && walletInfo?.isConnected === true">
+                        <div>{{info.name}} ({{info.symbol}})</div>
+                        <div class="btn btn-danger break-button"
+                        *ngIf="!allowed?.allowed && walletInfo?.isConnected === true && allowed?.tokenSymbol !== ''">
+                        You need to hold at least {{allowed.needed}} {{allowed.tokenSymbol}}</div>                        
+                        <div class="recruit custom-badge" *ngIf="allowed?.allowed && walletInfo?.isConnected === true">
                             <a *ngIf="!waiting" href="javascript: void(0);" class="btn btn-danger btn-round"
                                 (click)="recruit()"><span matBadgePosition="below after"
                                     [matBadge]="info.recruitPrice + ' BNB'"
@@ -48,13 +51,11 @@
                                 </mat-card-header>
                                 <div class="img">
                                     <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
-                                        [src]="fighter.metadata.image" onerror="this.src='/assets/img/siluette.png';">
-                                </div>
-                                <mat-card-content>
+                                        [src]="fighter.metadata.image.replace('gateway.pinata.cloud', 'infura-ipfs.io')" onerror="this.src='/assets/img/siluette.png';">
                                     <p>
                                         {{fighter.metadata.description}}
-                                    </p>
-                                </mat-card-content>
+                                    </p>    
+                                </div>
                                 <mat-card-actions class="custom-badge">
                                     <a routerLink="/detail/{{address}}/{{fighter.token}}"
                                         class="btn btn-round" [ngClass]="{'btn-success': fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase(), 'btn-danger': fighter?.ownerOf.toLowerCase() !== walletInfo?.wallet.toLowerCase()}">DETAIL</a>

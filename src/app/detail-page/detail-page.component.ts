@@ -33,11 +33,11 @@ export class DetailPageComponent implements OnInit, OnDestroy {
     public attackResults;
     public fighterName = "";
     public prices: {
-        address: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string;
+        address: string; tokenAddress: string; armorPrice: number; trainingPrice: number; tokenSymbol: string, lvlUpPrice: number; fightPrice: number; namePrice: number; fightSymbol: string;
         origArmorPrice: number; origLvlUpPrice: number; origTrainingPrice: number; origFightPrice: number; origNamePrice: number
     } =
         {
-            address: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined,
+            address: undefined, tokenAddress: undefined, armorPrice: undefined, trainingPrice: undefined, tokenSymbol: undefined, lvlUpPrice: undefined, fightPrice: undefined, namePrice: undefined, fightSymbol: undefined,
             origArmorPrice: undefined, origLvlUpPrice: undefined, origTrainingPrice: undefined, origFightPrice: undefined, origNamePrice: undefined
         };
     public tx = "";

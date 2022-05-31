@@ -1,5 +1,5 @@
 <div class="mainpage">
-    <app-page-header></app-page-header>
+    <app-page-header [info]="{tokenAddress: prices?.tokenAddress, tokenSymbol: prices?.tokenSymbol}"></app-page-header>
     <div class="wrapper">
         <div class="content" *ngIf="fighter">
             <mat-drawer-container [hasBackdrop]="false">
@@ -117,7 +117,7 @@
                         <div class="title">Attacker</div>
                         <div class="img">
                             <a routerLink="/detail/{{attackResults?.attacker?.address}}/{{attackResults?.attacker?.token}}"
-                                target="_blank"><img src="{{attackResults?.attacker?.metadata.image}}"
+                                target="_blank"><img src="{{attackResults?.attacker?.metadata?.image?.replace('gateway.pinata.cloud', 'infura-ipfs.io')}}"
                                     onerror="this.src='/assets/img/siluette.png';"></a>
                         </div>
                         <p>{{attackResults?.attacker?.metadata?.name}}</p>
@@ -126,7 +126,7 @@
                         <div class="title">Defender</div>
                         <div class="img">
                             <a routerLink="/detail/{{attackResults?.defender?.address}}/{{attackResults?.defender?.token}}"
-                                target="_blank"><img src="{{attackResults?.defender?.metadata.image}}"
+                                target="_blank"><img src="{{attackResults?.defender?.metadata?.image?.replace('gateway.pinata.cloud', 'infura-ipfs.io')}}"
                                     onerror="this.src='/assets/img/siluette.png';"></a>
                         </div>
                         <p>{{attackResults?.defender?.metadata?.name}}</p>

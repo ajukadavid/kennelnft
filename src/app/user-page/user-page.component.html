@@ -28,7 +28,7 @@
                         <mat-icon>live_help</mat-icon>
                     </button>
                     <div class="header">
-                        Your fighters
+                        Your Fighters
                     </div>
                     <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
                         <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%"
@@ -39,7 +39,7 @@
                                 </mat-card-header>
                                 <div class="img">
                                     <img *ngIf="fighter?.metadata?.image?.startsWith('http')" mat-card-image
-                                        [src]="fighter.metadata.image" onerror="this.src='/assets/img/siluette.png';">
+                                        [src]="fighter.metadata.image.replace('gateway.pinata.cloud', 'infura-ipfs.io')" onerror="this.src='/assets/img/siluette.png';">
                                 </div>
                                 <mat-card-content>
                                     <p>

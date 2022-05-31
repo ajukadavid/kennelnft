@@ -11,7 +11,7 @@ import { NotifyService } from './notify.service';
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-    title = 'Kennel NFT Game';
+    title = 'Kennel Kombat';
 
     private subscription: Subscription = new Subscription();
     public notifications = [];

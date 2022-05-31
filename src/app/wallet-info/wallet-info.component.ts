@@ -1,7 +1,8 @@
 import { DOCUMENT } from "@angular/common";
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { ThemePalette } from "@angular/material/core";
 import { Subscription } from "rxjs";
+import { KENNELADDRESS, SWAPURL } from "../constants";
 import { CryptoWalletService } from "../crypto-wallet.service";
 
 @Component({
@@ -11,6 +12,9 @@ import { CryptoWalletService } from "../crypto-wallet.service";
 })
 export class WalletInfoComponent implements OnInit, OnDestroy {
 
+    @Input() info: {tokenAddress?: string; tokenSymbol?: string} = {};
+    public swapURL = SWAPURL;
+    public kenneladdress = KENNELADDRESS;
     public badgeColor: ThemePalette = "primary";
     public get walletInfo(): any {
         return this.cryptoWalletService.walletInfo;
@@ -26,7 +30,6 @@ export class WalletInfoComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subscription.add(this.cryptoWalletService.updated$.subscribe((data) => {
-            console.log("WalletInfoComponent", data);
             if (data) {
                 if (!data.isConnected) {
                     this.badgeColor = "warn";

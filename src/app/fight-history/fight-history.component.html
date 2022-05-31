@@ -39,7 +39,7 @@
                             <div class="infofight"><div class="time">{{fighter.timeTxt}}</div><div class="winnings">Winner gets {{fighter.prize}} BNB</div></div>
                             <div class="img">
                                 <a routerLink="/detail/{{fighter.address}}/{{fighter.token}}"><img
-                                        src="{{fighter.metadata.image}}" onerror="this.src='/assets/img/siluette.png';">
+                                        src="{{fighter.metadata.image.replace('gateway.pinata.cloud', 'infura-ipfs.io')}}" onerror="this.src='/assets/img/siluette.png';">
                                 </a>
                             </div>
                             <p>{{fighter.metadata.name}}<br>                            

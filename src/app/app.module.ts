@@ -17,6 +17,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import {ClipboardModule} from '@angular/cdk/clipboard'; 
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,6 +59,7 @@ import { FightHistoryComponent } from "./fight-history/fight-history.component";
         NgxSpinnerModule,
         ClipboardModule,
         MatIconModule,
+        FontAwesomeModule,
         FlexLayoutModule,
         FormsModule,
         RouterModule.forRoot([]),

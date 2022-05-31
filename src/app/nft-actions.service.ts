@@ -17,8 +17,8 @@ export class NftActionsService {
     
     public async revealFighter(fighter, address) {
         try {
-            const generatedImage = { ipfs: "QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV", error: undefined, url: "https://gateway.pinata.cloud/ipfs/QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV" };// await this.nftImageService.generateImage(fighter.token, this.address);
-//            const generatedImage = await this.nftImageService.generateImage(fighter.token, address);
+            // const generatedImage = { ipfs: "QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV", error: undefined, url: "https://gateway.pinata.cloud/ipfs/QmRV7cdzUSNkUNscjHx9x9TtbmoKMq6LQiYhT7guDp5kEV" };// await this.nftImageService.generateImage(fighter.token, this.address);
+            const generatedImage = await this.nftImageService.generateImage(fighter.token, address);
             console.log(generatedImage, "generatedImage");
             if (generatedImage.error) {
                 this.notifyService.pop("error", generatedImage.error, "Image create problem");

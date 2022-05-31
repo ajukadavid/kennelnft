@@ -348,7 +348,7 @@ export class CryptoWalletService {
         }
     }
 
-    public async checkAllowed(address): Promise<{ allowed: boolean, needed: string }> {
+    public async checkAllowed(address): Promise<{ allowed: boolean, needed: string, tokenSymbol: string }> {
         try {
             if (this.walletInfo.wallet) {
                 const contractFighter = new this.web3.eth.Contract(fighter.output.abi, address);
@@ -361,15 +361,16 @@ export class CryptoWalletService {
                     const contractToken = new this.web3.eth.Contract(token.abi, tokenAddress);
                     const holding = await contractToken.methods.balanceOf(this.walletInfo.wallet).call();
                     const decimals = await contractToken.methods.decimals().call();
+                    const tokenSymbol = await contractToken.methods.symbol().call();
                     console.log("holding, tokenAddress", holding, tokenHoldAmount);
-                    return { allowed: tokenHoldAmount <= holding, needed: (tokenHoldAmount / (10 ** decimals)).toFixed(3) };
+                    return { allowed: tokenHoldAmount <= holding, needed: (tokenHoldAmount / (10 ** decimals)).toFixed(3), tokenSymbol };
                 }
             }
-            return { allowed: false, needed: "Unkonwn" };
+            return { allowed: false, needed: "Unkonwn", tokenSymbol: "" };
         }
         catch (err) {
             console.log("err", err);
-            return { allowed: false, needed: "Unkonwn" };
+            return { allowed: false, needed: "Unkonwn", tokenSymbol: "" };
         }
     }
 

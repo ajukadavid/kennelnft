@@ -6,6 +6,8 @@ export const BEURL = configJson.beurl; // "/api";
 export const DEFAULTNETWORK = Number(configJson.networkId);
 export const KENNELADDRESS = configJson.kenneladdress;
 export const TRANSACTIONURL = configJson.transactionsurl;
+export const SWAPURL = configJson.swapurl;
+
 
 export const ADDRESSABI = [{
     "inputs": [{ "internalType": "string", "name": "_name", "type": "string" },

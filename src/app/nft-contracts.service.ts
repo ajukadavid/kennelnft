@@ -72,7 +72,13 @@ export class NftContractsService {
                 const contractFighter = new this.web3.eth.Contract(fighter.output.abi, team);
                 const name = await contractFighter.methods.name().call();
                 const symbol = await contractFighter.methods.symbol().call();
-                teamsInfo.push({ address: team, squad: name, symbol });
+                let image = "";
+                try {
+                    image = await contractFighter.methods.defaultImage().call(); 
+                } catch (noex) {
+                    console.log(noex);
+                }
+                teamsInfo.push({ address: team, squad: name, symbol, image });
             }
             // get fighters info
             console.log(teamsInfo);
@@ -130,8 +136,8 @@ export class NftContractsService {
         return { fightSymbol: "BNB", fightPrice: fightPr, origFightPrice: fightPrice };
     }
 
-    public async getSquadInfo(address): Promise<{ address: string; name: string; symbol: string; fightSymbol: string; fightPrice: number; origRecruit: any; recruitPrice: number; tokenSymbol: string }> {
-        let teamsInfo = { address: "", name: "", symbol: "", fightSymbol: "", fightPrice: 0, recruitPrice: 0, origRecruit: 0, tokenSymbol: "" };
+    public async getSquadInfo(address): Promise<{ address: string; tokenAddress: string; name: string; symbol: string; fightSymbol: string; fightPrice: number; origRecruit: any; recruitPrice: number; tokenSymbol: string }> {
+        let teamsInfo = { address: "", tokenAddress: "", name: "", symbol: "", fightSymbol: "", fightPrice: 0, recruitPrice: 0, origRecruit: 0, tokenSymbol: "" };
         try {
             if (this.teamsData[address]) {
                 console.log("this.teamsData[address]", this.teamsData[address]);
@@ -156,7 +162,7 @@ export class NftContractsService {
                 tokenSymbol = await contractToken.methods.symbol().call();
                 price = recruitPrice / (10 ** decimals);
             }
-            teamsInfo = { address, name, symbol, fightPrice: fightInfo.fightPrice, fightSymbol: fightInfo.fightSymbol, origRecruit: recruitPrice, recruitPrice: price, tokenSymbol };
+            teamsInfo = { address, tokenAddress, name, symbol, fightPrice: fightInfo.fightPrice, fightSymbol: fightInfo.fightSymbol, origRecruit: recruitPrice, recruitPrice: price, tokenSymbol };
             this.teamsData[address] = teamsInfo;
             return teamsInfo;
         } catch (ex) {
@@ -169,6 +175,7 @@ export class NftContractsService {
 
     public async getPrices(address): Promise<{
         address: string;
+        tokenAddress: string;
         armorPrice: number;
         lvlUpPrice: number;
         trainingPrice: number;
@@ -184,7 +191,7 @@ export class NftContractsService {
 
     }> {
         let teamsInfo = {
-            address: "", armorPrice: 0, trainingPrice: 0, lvlUpPrice: 0, tokenSymbol: "", fightSymbol: "", fightPrice: 0, namePrice: 0,
+            address: "", tokenAddress: "", armorPrice: 0, trainingPrice: 0, lvlUpPrice: 0, tokenSymbol: "", fightSymbol: "", fightPrice: 0, namePrice: 0,
             origArmorPrice: 0, origLvlUpPrice: 0, origTrainingPrice: 0, origFightPrice: 0, origNamePrice: 0
         };
         try {
@@ -213,7 +220,7 @@ export class NftContractsService {
                 namePrice = setNamePrice / (10 ** 18);
             }
             teamsInfo = {
-                address, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol,
+                address, tokenAddress, armorPrice: price, trainingPrice: trainPrice, lvlUpPrice, namePrice, tokenSymbol,
                 origArmorPrice: armorPrice, origLvlUpPrice: levelUpPrice, origTrainingPrice: trainingPrice, origNamePrice: setNamePrice
                 , ...fightInfo
             };
