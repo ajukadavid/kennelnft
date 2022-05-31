@@ -28,7 +28,7 @@
                         <mat-icon>live_help</mat-icon>
                     </button>
                     <div class="head">
-                        <h1>KENNEL NFT GAME</h1>
+                        <h1>KENNEL KOMBAT</h1>
                     </div>
                     <div class="golden">
                         <div class="article">
@@ -47,13 +47,7 @@
                                 ipsum
                                 massa, ullamcorper in, auctor et, scelerisque sed, est. Sed ac dolor sit amet purus
                                 malesuada
-                                congue. Vivamus ac leo pretium faucibus. Quis autem vel eum iure reprehenderit qui in ea
-                                voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat
-                                quo
-                                voluptas nulla pariatur? Fusce suscipit libero eget elit. Mauris elementum mauris vitae
-                                tortor.
-                                Proin pede metus, vulputate nec, fermentum fringilla, vehicula vitae, justo. Etiam
-                                neque.
+                                congue.
                             </div>
                         </div>
                     </div>
@@ -61,7 +55,7 @@
                         <swiper [config]="config">
                             <ng-template swiperSlide *ngFor="let team of teams">
                                 <div class="article">
-                                    <a routerLink="/squad/{{team.address}}"><img src="/assets/img/{{team.image}}"
+                                    <a routerLink="/squad/{{team.address}}"><img src="https://gateway.pinata.cloud/ipfs/{{team.image}}"
                                             onerror="this.src='/assets/img/team.jpg';"></a>
                                     <div class="description">{{team.squad}}</div>
                                 </div>
