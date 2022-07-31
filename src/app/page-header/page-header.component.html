@@ -1,17 +1,24 @@
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute">
     <div class="container-fluid">
-        <div class="navbar-wrapper">
+        <div class="navbar-brand">
             <div class="logo"><a routerLink="/">KENNEL KOMBAT</a></div>
         </div>
-        <div class="justify-content-center">
-            <span class="btn btn-primary btn-round" [matBadge]="'Total winnings'"
-            [matBadgeColor]="'accent'">{{winnings + 'BNB'}}</span>
-            &nbsp;
-            <span class="btn btn-info btn-round" [matBadge]="'Possible win'"
-            [matBadgeColor]="'accent'">{{possible + 'BNB'}}</span>
-        </div>
-        <div class="justify-content-end">
-            <app-wallet-info [info]="info"></app-wallet-info>
+        <!-- Toggle button -->
+        <button class="navbar-toggler" type="button" (click)="toggleNavbar = !toggleNavbar" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="toggleNavbar">
+            <div class="justify-content-center buttons-price">
+                <span class="btn btn-primary btn-round" [matBadge]="'Total winnings'"
+                    [matBadgeColor]="'accent'">{{winnings + 'BNB'}}</span>
+                &nbsp;
+                <span class="btn btn-info btn-round" [matBadge]="'Possible win'" [matBadgeColor]="'accent'">{{possible +
+                    'BNB'}}</span>
+            </div>
+            <div class="justify-content-end">
+                <app-wallet-info [info]="info"></app-wallet-info>
+            </div>
         </div>
     </div>
 </nav>

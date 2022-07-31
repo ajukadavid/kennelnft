@@ -79,7 +79,7 @@
                     <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
                         <div class="article" fxFlex="40%" fxFlex.xs="100%" fxFlex.sm="40%">
                             <div class="img">
-                                <img src="{{fighter.metadata.image}}" onerror="this.src='/assets/img/siluette.png';">
+                                <img src="{{fighter.metadata.image?.replace('gateway.pinata.cloud', 'infura-ipfs.io')}}" onerror="this.src='/assets/img/siluette.png';">
                             </div>
                             <p>{{fighter.metadata.description}}</p>
                         </div>
@@ -92,12 +92,12 @@
                                     {{fighter.metadata.name}}
                                 </div>
                             </div>
-                            <div class="row" *ngFor="let attr of fighter.metadata.attributes">
+                            <div class="row" *ngFor="let attr of fighter.metadata.attributes | filterValue">
                                 <div class="col-md-6">
-                                    {{attr.trait_type}}
+                                    {{attr.trait_type}}  <span class="helpicon" [matTooltip]="'Description - ' + attr.trait_type"><mat-icon>help_outline</mat-icon></span>
                                 </div>
                                 <div class="col-md-6">
-                                    {{attr.value}}
+                                    <span>{{attr.displayValue}}</span>
                                 </div>
                             </div>
                         </div>

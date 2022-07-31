@@ -14,7 +14,6 @@ img {
 .img {
     height: calc(100% - 110px);
     padding-top: 10px;
-    background: white;
     min-height: 250px;
 }
 
@@ -81,4 +80,8 @@ img {
         margin-bottom: 5px;
         text-align: center;
     }
+}
+
+.highlight {
+    box-shadow: rgb(45, 212, 45) 0px 0px 30px 10px;
 }

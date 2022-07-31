@@ -43,7 +43,8 @@
                         </div>
                     </div>
                     <div fxLayoutAlign="center" fxLayout="row wrap" fxLayoutGap="grid">
-                        <div class="article" fxFlex="20%" fxFlex.xs="100%" fxFlex.sm="33%"
+                        <div fxFlex="20" fxFlex.xs="100" fxFlex.sm="50" fxFlex.md="33"
+                        [ngClass]="{'article': true, 'highlight': fighter?.ownerOf.toLowerCase() === walletInfo?.wallet.toLowerCase()}"
                             *ngFor="let fighter of fighters | orderBy: 'token' : true">
                             <mat-card>
                                 <mat-card-header>

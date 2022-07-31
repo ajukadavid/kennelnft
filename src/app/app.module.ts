@@ -15,9 +15,11 @@ import { SwiperModule } from "swiper/angular";
 import { OrderModule } from "ngx-order-pipe";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTooltipModule } from '@angular/material/tooltip'; 
 import {MatIconModule} from '@angular/material/icon';
 import {ClipboardModule} from '@angular/cdk/clipboard'; 
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -31,6 +33,7 @@ import { PageHeaderComponent } from './page-header/page-header.component';
 import { PageBottomComponent } from './page-bottom/page-bottom.component';
 import { FancyDialogComponent } from './fancy-dialog/fancy-dialog.component';
 import { FightHistoryComponent } from "./fight-history/fight-history.component";
+import { FilterValuePipe } from "./detail-page/detail-filter.pipe";
 
 @NgModule({
     declarations: [
@@ -43,11 +46,13 @@ import { FightHistoryComponent } from "./fight-history/fight-history.component";
         PageHeaderComponent,
         PageBottomComponent,
         FightHistoryComponent,
-        FancyDialogComponent
+        FancyDialogComponent,
+        FilterValuePipe
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
+        NgbModule,
         OrderModule,
         CommonModule,
         MatFormFieldModule,
@@ -55,6 +60,7 @@ import { FightHistoryComponent } from "./fight-history/fight-history.component";
         MatBadgeModule,
         MatSidenavModule,
         MatButtonModule,
+        MatTooltipModule,
         MatInputModule,
         NgxSpinnerModule,
         ClipboardModule,

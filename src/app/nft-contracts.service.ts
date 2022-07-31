@@ -74,7 +74,7 @@ export class NftContractsService {
                 const symbol = await contractFighter.methods.symbol().call();
                 let image = "";
                 try {
-                    image = await contractFighter.methods.defaultImage().call(); 
+                    image = await contractFighter.methods.defaultImage().call();
                 } catch (noex) {
                     console.log(noex);
                 }
@@ -327,15 +327,28 @@ export class NftContractsService {
             const metadata = await contractFighter.methods.tokenURI(tokenId).call();
             const imageUploaded = await contractFighter.methods.tokenToImageUpdated(tokenId).call();
             const upgradable = await contractFighter.methods.upgradable(tokenId).call();
-            console.log("metadata", address, tokenId, metadata);
             const base64 = metadata.split(",")[1];
-            console.log("base64", base64);
-            console.log("info", Buffer.from(base64, 'base64').toString('ascii'));
             let json = JSON.parse(Buffer.from(base64, 'base64').toString('ascii').replace("\"attributes\":\"", "\"attributes\":").replace("]\", \"image", "], \"image"));
             if (json?.attributes) {
                 json.attributes = json.attributes.map((attr) => {
                     if (attr.trait_type === "Winnings") {
-                        attr.value = (Number(attr.value) / (10 ** 18)).toFixed(7) + " Bnb";
+                        attr.value = (Number(attr.value) / (10 ** 18)).toFixed(7) + " BNB";
+                    }
+                    attr.displayValue = attr.value;
+                    if (attr.trait_type === "Critical Chance") {
+                        attr.displayValue = (attr.value * 10) + "% / 60%";
+                    }
+                    if (attr.trait_type === "Max Armor") {
+                        attr.displayValue = attr.value + " / 25";
+                    }
+                    if (attr.trait_type === "Armor") {
+                        attr.displayValue = attr.value + " / 25";
+                    }
+                    if (attr.trait_type === "Toughness") {
+                        attr.displayValue = attr.value + " / 999";
+                    }
+                    if (attr.trait_type === "Fighter DNA") {
+                        attr.displayValue = undefined;
                     }
                     return attr;
                 });

@@ -1,21 +1,21 @@
-<div class="navbar-nav">
-    <span *ngIf="info?.tokenAddress && info?.tokenAddress !==''" class="nav-item buy-token">
+<ul class="navbar-nav">
+    <li *ngIf="info?.tokenAddress && info?.tokenAddress !==''" class="nav-item buy-token">
         <a href="{{swapURL}}{{info?.tokenAddress}}" target="_blank" class="btn btn-danger btn-round">Buy {{info?.tokenSymbol}}</a>
-    </span>      
-    <span class="nav-item buy-kennel">
+    </li>      
+    <li class="nav-item buy-kennel">
         <a href="{{swapURL}}{{kenneladdress}}" target="_blank" class="btn btn-danger btn-round">Buy Kennel</a>
-    </span>      
-    <span class="nav-item switcher">
-        <a href="javascript:void(0)" (click)="switchColor()"><span class="material-icons">
+    </li>      
+    <li class="nav-item switcher">
+        <a href="javascript:void(0)" class="btn btn-round" (click)="switchColor()"><span class="material-icons">
             light_mode
             </span>            
         </a>
-    </span>    
-    <span class="nav-item" *ngIf="walletInfo && walletInfo?.wallet!=='' && walletInfo.isConnected">
+    </li>    
+    <li class="nav-item" *ngIf="walletInfo && walletInfo?.wallet!=='' && walletInfo.isConnected">
         <a href="javascript:void(0)" class="btn btn-warning btn-round" href="javascript:void(0)"
             routerLink="/dashboard">Your fighters</a>
-    </span>
-    <span class="nav-item">
+    </li>
+    <li class="nav-item">
         <a *ngIf="!walletInfo?.wallet" href="javascript:void(0)" class="btn btn-primary btn-round"
             (click)="connectWallet()">Wallet</a>
         <span *ngIf="walletInfo && walletInfo?.wallet!==''" [matBadge]="walletInfo.network?.replace(' network','')"
@@ -26,5 +26,5 @@
             <a class="dropdown-item" href="javascript:void(0)" (click)="showMenu=false; logout()">Logout</a>
         </div>
 
-    </span>
-</div>
+    </li>
+</ul>

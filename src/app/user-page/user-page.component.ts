@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
 import { TRANSACTIONURL } from '../constants';
@@ -12,7 +12,7 @@ import { NotifyService } from '../notify.service';
     templateUrl: './user-page.component.html',
     styleUrls: ['./user-page.component.scss']
 })
-export class UserPageComponent implements OnInit {
+export class UserPageComponent implements OnInit, OnDestroy {
 
     public tranurl = TRANSACTIONURL;
     private subscription: Subscription = new Subscription();
@@ -46,9 +46,13 @@ export class UserPageComponent implements OnInit {
 
     }
 
+    public ngOnDestroy(): void {
+        this.subscription.unsubscribe();   
+    }
+
     private subscribeToDataStream() {
         this.subscription.add(this.nftContractsService.dataStream$.subscribe(async (data) => {
-            if (data.type === "fighter") {
+            if (data.type === "fighter" && !(this.fighters?.find((fighter) => (fighter.address === data.fighter.address && fighter.token === data.fighter.token)))) {
                 this.fighters.splice(0, 0, data.fighter);
             }
             this.cd.detectChanges();
